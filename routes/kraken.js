@@ -40,6 +40,23 @@ router.post('/addOrder', function (req, res, next) {
 });
 
 
+router.get('/buy', function (req, res, next) {
+
+
+  (async () => {
+    var body = req.body;
+
+
+
+       var response =(await kraken.api('AddOrder',{pair : 'XBTUSD', type: "buy", ordertype : "market",  volume : 0.008  }));
+      console.dir(response);
+      res.send(response)
+
+  })();
+
+});
+
+
 /* GET users listing. */
 router.post('/cancelOrder', function (req, res, next) {
 
@@ -85,12 +102,10 @@ router.get('/tradesHistory', function (req, res, next) {
 
 router.get('/test', function (req, res, next) {
 
-  (async () => {
+
     // Display user's balance
 
-    res.json("test");
-
-  })();
+  res.json({"message": "test"});
 
 });
 
@@ -100,9 +115,8 @@ router.get('/balance', function (req, res, next) {
       // Display user's balance
       var response = (await kraken.api('Balance'));
       console.dir(response);
-      res.send(response)
+      res.json(response)
 
-        console.log(error)
 
   })();
 
