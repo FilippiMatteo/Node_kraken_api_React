@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import '../App.css';
+import Spinner from "../componets/Spinner";
 
 
 function Balance() {
@@ -8,12 +9,23 @@ function Balance() {
   },[])
 
 const [pairs, setPairs] = useState([])
+const [visibleSpinner, setVisibleSpinner] = useState([])
+const [spinnerWidth, setSpinnerWidth] = useState([])
 
   const fetchData = async () => {
+    setVisibleSpinner("show");
+    setSpinnerWidth("width-15");
     const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
+    setSpinnerWidth("width-50")
+
     const data = await rawData.json();
     console.log(data);
     setPairs(data)
+    setSpinnerWidth("width-100")
+
+    setTimeout(()=>{
+      setVisibleSpinner("hide");
+    },1000)
   }
 
 
@@ -42,6 +54,7 @@ const [pairs, setPairs] = useState([])
     <div className="App">
       <h1>Balance</h1>
 
+      <Spinner visibleSpinner={visibleSpinner} spinnerWidth={spinnerWidth}></Spinner>
 
       <div className="results b">
         {_renderObject(objects)}

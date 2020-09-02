@@ -73,6 +73,7 @@ function Navbar() {
           {/*  </li>*/}
           {/*</ul>*/}
         </li>
+        <li><Link to="/addorder">Add Order</Link></li>
 
       </ul>
       <ul className="secondary">

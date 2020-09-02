@@ -8,7 +8,7 @@ import Navbar from "./Navbar";
 function Header() {
   return (
     <header className="kraken-header">
-      <a data-testid="site-link" href="/it-IT" className="header-logo">Kraken</a>
+      <a  className="header-logo">Kraken</a>
           <Navbar/>
     </header>
 

@@ -9,6 +9,7 @@ import Header from "./routes/Header";
 import Balance from "./routes/Balance";
 import Signup from "./routes/Signup";
 import Login from "./routes/Login";
+import AddOrder from "./routes/AddOrder";
 
 
 
@@ -22,6 +23,7 @@ function App() {
           <Route exact path="/" component={Home}></Route>
           <Route exact path="/balance" component={Balance}></Route>
           <Route exact path="/about" component={About}></Route>
+          <Route exact path="/addorder" component={AddOrder}></Route>
           <Route exact path="/loging" component={Login}></Route>
           <Route exact path="/signup" component={Signup}></Route>
         </Switch>
