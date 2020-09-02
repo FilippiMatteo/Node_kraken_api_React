@@ -39,6 +39,15 @@
   padding: 5px;
 
 }
+.crypto-png{
+  float: left;
+  display: table-cell;
+  height: 20px;
+  margin-right: 10px;
+  vertical-align: middle;
+
+}
+
 
 @keyframes App-logo-spin {
   from {

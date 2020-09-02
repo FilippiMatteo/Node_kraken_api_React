@@ -19,10 +19,11 @@ const [pairs, setPairs] = useState([])
 
   function _renderObject(objects){
     return Object.entries(objects).map(([key, value], i) => {
+      // let img = "/public/cryptocurrency/" + key.toLowerCase() + '.png';
       return (
 
         <div className="pairs" key={key}>
-          {key} : {value}
+          <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} /> <span>{key} : {value}</span>
         </div>
       )
     })
