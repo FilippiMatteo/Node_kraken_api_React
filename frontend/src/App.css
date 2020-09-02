@@ -33,9 +33,10 @@
   padding: 20px;
 }
 .pairs{
+  overflow: auto;
   text-align: left;
-  background-color: #5741d9;
-  color: white;
+  /*background-color: #5741d9;*/
+  /*color: white;*/
   padding: 5px;
 
 }
@@ -46,6 +47,14 @@
   margin-right: 10px;
   vertical-align: middle;
 
+}
+
+.bc {
+  border-color: #ccc;
+  border-radius: .25rem;
+  border-style: solid;
+  border-width: 1px;
+  margin-bottom: 3px;
 }
 
 

@@ -22,7 +22,7 @@ const [pairs, setPairs] = useState([])
       // let img = "/public/cryptocurrency/" + key.toLowerCase() + '.png';
       return (
 
-        <div className="pairs" key={key}>
+        <div className="pairs bc" key={key}>
           <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} /> <span>{key} : {value}</span>
         </div>
       )
@@ -43,7 +43,7 @@ const [pairs, setPairs] = useState([])
       <h1>Balance</h1>
 
 
-      <div className="results">
+      <div className="results b">
         {_renderObject(objects)}
       </div>
 
