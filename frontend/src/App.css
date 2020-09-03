@@ -1,106 +1,109 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+    height: 40vmin;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
 }
 
-.results{
-  margin: 30px;
-  padding: 20px;
+.results {
+    margin: 30px;
+    padding: 20px;
 }
-.pairs{
-  overflow: auto;
-  text-align: left;
-  /*background-color: #5741d9;*/
-  /*color: white;*/
-  padding: 5px;
+
+.pairs {
+    overflow: auto;
+    text-align: left;
+    /*background-color: #5741d9;*/
+    /*color: white;*/
+    padding: 5px;
 
 }
-.crypto-png{
-  float: left;
-  display: table-cell;
-  height: 20px;
-  margin-right: 10px;
-  vertical-align: middle;
+
+.crypto-png {
+    float: left;
+    display: table-cell;
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: middle;
 
 }
 
 .bc {
-  border-color: #ccc;
-  border-radius: .25rem;
-  border-style: solid;
-  border-width: 1px;
-  margin-bottom: 3px;
+    border-color: #ccc;
+    border-radius: .25rem;
+    border-style: solid;
+    border-width: 1px;
+    margin-bottom: 3px;
 }
 
 
-.hide{
-  /*display: block;*/
-  visibility: hidden;
-}
-.show{
-  visibility: visible;
-
+.hide {
+    /*display: block;*/
+    visibility: hidden;
 }
 
+.show {
+    visibility: visible;
+
+}
 
 
 .loading .progress, .loading .progress {
-  margin: 0 auto;
-  width: 400px;
-  height: 40px;
+    margin: 0 auto;
+    width: 400px;
+    height: 40px;
 }
-
 
 
 .loading {
-  text-align: center;
-  margin: 0 auto;
-  position: relative;
-  top: 45%;
+    text-align: center;
+    margin: 0 auto;
+    position: relative;
+    top: 45%;
 }
+
 .loading .progress {
-  margin: 0 auto;
-  width: 400px;
-  height: 40px;
+    margin: 0 auto;
+    width: 400px;
+    height: 40px;
 }
 
 .loading .mono {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  /*color: red;*/
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    /*color: red;*/
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
+
 .loading p {
-  font-size: 11px;
-  margin-top: 10px;
+    font-size: 11px;
+    margin-top: 10px;
 }
 
 /*.loading .progress .bar, .loading .progress .bar {*/
@@ -108,7 +111,7 @@
 /*}*/
 
 #ticker-chart-pulldown {
-  background-color: #fff;
+    background-color: #fff;
 }
 
 
@@ -118,107 +121,115 @@
 
 
 .progress-info.progress-striped .bar, .progress-striped .bar-info {
-  background-color: #2824b6;
-  background-image: -webkit-gradient(linear,0 100%,100% 0,color-stop(.25,hsla(0,0%,100%,.15)),color-stop(.25,transparent),color-stop(.5,transparent),color-stop(.5,hsla(0,0%,100%,.15)),color-stop(.75,hsla(0,0%,100%,.15)),color-stop(.75,transparent),to(transparent));
-  background-image: -webkit-linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 0,transparent 50%,hsla(0,0%,100%,.15) 0,hsla(0,0%,100%,.15) 75%,transparent 0,transparent);
-  background-image: -moz-linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 25%,transparent 50%,hsla(0,0%,100%,.15) 50%,hsla(0,0%,100%,.15) 75%,transparent 75%,transparent);
-  background-image: -o-linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 25%,transparent 50%,hsla(0,0%,100%,.15) 50%,hsla(0,0%,100%,.15) 75%,transparent 75%,transparent);
-  background-image: linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 0,transparent 50%,hsla(0,0%,100%,.15) 0,hsla(0,0%,100%,.15) 75%,transparent 0,transparent);
+    background-color: #2824b6;
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, hsla(0, 0%, 100%, .15)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, hsla(0, 0%, 100%, .15)), color-stop(.75, hsla(0, 0%, 100%, .15)), color-stop(.75, transparent), to(transparent));
+    background-image: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 0, transparent 50%, hsla(0, 0%, 100%, .15) 0, hsla(0, 0%, 100%, .15) 75%, transparent 0, transparent);
+    background-image: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 25%, transparent 50%, hsla(0, 0%, 100%, .15) 50%, hsla(0, 0%, 100%, .15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 25%, transparent 50%, hsla(0, 0%, 100%, .15) 50%, hsla(0, 0%, 100%, .15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 0, transparent 50%, hsla(0, 0%, 100%, .15) 0, hsla(0, 0%, 100%, .15) 75%, transparent 0, transparent);
 }
+
 .progress.active .bar {
-  -webkit-animation: progress-bar-stripes 2s linear infinite;
-  -moz-animation: progress-bar-stripes 2s linear infinite;
-  -ms-animation: progress-bar-stripes 2s linear infinite;
-  -o-animation: progress-bar-stripes 2s linear infinite;
-  animation: progress-bar-stripes 2s linear infinite;
+    -webkit-animation: progress-bar-stripes 2s linear infinite;
+    -moz-animation: progress-bar-stripes 2s linear infinite;
+    -ms-animation: progress-bar-stripes 2s linear infinite;
+    -o-animation: progress-bar-stripes 2s linear infinite;
+    animation: progress-bar-stripes 2s linear infinite;
 }
+
 .progress-info .bar, .progress .bar-info {
-  background-color: #4bb1cf;
-  background-image: -moz-linear-gradient(top,#5bc0de,#339bb9);
-  background-image: -webkit-gradient(linear,0 0,0 100%,from(#5bc0de),to(#339bb9));
-  background-image: -webkit-linear-gradient(top,#5bc0de,#339bb9);
-  background-image: -o-linear-gradient(top,#5bc0de,#339bb9);
-  background-image: linear-gradient(180deg,#5bc0de,#339bb9);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff5bc0de",endColorstr="#ff339bb9",GradientType=0);
+    background-color: #4bb1cf;
+    background-image: -moz-linear-gradient(top, #5bc0de, #339bb9);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#339bb9));
+    background-image: -webkit-linear-gradient(top, #5bc0de, #339bb9);
+    background-image: -o-linear-gradient(top, #5bc0de, #339bb9);
+    background-image: linear-gradient(180deg, #5bc0de, #339bb9);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff5bc0de", endColorstr="#ff339bb9", GradientType=0);
 }
+
 .progress-striped .bar {
-  background-color: #149bdf;
-  background-image: -webkit-gradient(linear,0 100%,100% 0,color-stop(.25,hsla(0,0%,100%,.15)),color-stop(.25,transparent),color-stop(.5,transparent),color-stop(.5,hsla(0,0%,100%,.15)),color-stop(.75,hsla(0,0%,100%,.15)),color-stop(.75,transparent),to(transparent));
-  background-image: -webkit-linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 0,transparent 50%,hsla(0,0%,100%,.15) 0,hsla(0,0%,100%,.15) 75%,transparent 0,transparent);
-  background-image: -moz-linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 25%,transparent 50%,hsla(0,0%,100%,.15) 50%,hsla(0,0%,100%,.15) 75%,transparent 75%,transparent);
-  background-image: -o-linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 25%,transparent 50%,hsla(0,0%,100%,.15) 50%,hsla(0,0%,100%,.15) 75%,transparent 75%,transparent);
-  background-image: linear-gradient(45deg,hsla(0,0%,100%,.15) 25%,transparent 0,transparent 50%,hsla(0,0%,100%,.15) 0,hsla(0,0%,100%,.15) 75%,transparent 0,transparent);
-  -webkit-background-size: 40px 40px;
-  -moz-background-size: 40px 40px;
-  -o-background-size: 40px 40px;
-  background-size: 40px 40px;
+    background-color: #149bdf;
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, hsla(0, 0%, 100%, .15)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, hsla(0, 0%, 100%, .15)), color-stop(.75, hsla(0, 0%, 100%, .15)), color-stop(.75, transparent), to(transparent));
+    background-image: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 0, transparent 50%, hsla(0, 0%, 100%, .15) 0, hsla(0, 0%, 100%, .15) 75%, transparent 0, transparent);
+    background-image: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 25%, transparent 50%, hsla(0, 0%, 100%, .15) 50%, hsla(0, 0%, 100%, .15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 25%, transparent 50%, hsla(0, 0%, 100%, .15) 50%, hsla(0, 0%, 100%, .15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, hsla(0, 0%, 100%, .15) 25%, transparent 0, transparent 50%, hsla(0, 0%, 100%, .15) 0, hsla(0, 0%, 100%, .15) 75%, transparent 0, transparent);
+    -webkit-background-size: 40px 40px;
+    -moz-background-size: 40px 40px;
+    -o-background-size: 40px 40px;
+    background-size: 40px 40px;
 }
+
 .progress .bar {
-  float: left;
-  width: 0;
-  height: 100%;
-  font-size: 12px;
-  color: #fff;
-  text-align: center;
-  text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-  background-color: #0e90d2;
-  background-image: -moz-linear-gradient(top,#149bdf,#0480be);
-  background-image: -webkit-gradient(linear,0 0,0 100%,from(#149bdf),to(#0480be));
-  background-image: -webkit-linear-gradient(top,#149bdf,#0480be);
-  background-image: -o-linear-gradient(top,#149bdf,#0480be);
-  background-image: linear-gradient(180deg,#149bdf,#0480be);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff149bdf",endColorstr="#ff0480be",GradientType=0);
-  -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-  -moz-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-  box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  -webkit-transition: width .6s ease;
-  -moz-transition: width .6s ease;
-  -o-transition: width .6s ease;
-  transition: width .6s ease;
+    float: left;
+    width: 0;
+    height: 100%;
+    font-size: 12px;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+    background-color: #0e90d2;
+    background-image: -moz-linear-gradient(top, #149bdf, #0480be);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
+    background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
+    background-image: -o-linear-gradient(top, #149bdf, #0480be);
+    background-image: linear-gradient(180deg, #149bdf, #0480be);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff149bdf", endColorstr="#ff0480be", GradientType=0);
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+    -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: width .6s ease;
+    -moz-transition: width .6s ease;
+    -o-transition: width .6s ease;
+    transition: width .6s ease;
 }
+
 .progress, .progress .bar {
-  background-repeat: repeat-x;
+    background-repeat: repeat-x;
 }
 
 .progress {
-  height: 20px;
-  margin-bottom: 20px;
-  overflow: hidden;
-  background-color: #f7f7f7;
-  background-image: -moz-linear-gradient(top,#f5f5f5,#f9f9f9);
-  background-image: -webkit-gradient(linear,0 0,0 100%,from(#f5f5f5),to(#f9f9f9));
-  background-image: -webkit-linear-gradient(top,#f5f5f5,#f9f9f9);
-  background-image: -o-linear-gradient(top,#f5f5f5,#f9f9f9);
-  background-image: linear-gradient(180deg,#f5f5f5,#f9f9f9);
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#fff5f5f5",endColorstr="#fff9f9f9",GradientType=0);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #f7f7f7;
+    background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9));
+    background-image: -webkit-linear-gradient(top, #f5f5f5, #f9f9f9);
+    background-image: -o-linear-gradient(top, #f5f5f5, #f9f9f9);
+    background-image: linear-gradient(180deg, #f5f5f5, #f9f9f9);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#fff5f5f5", endColorstr="#fff9f9f9", GradientType=0);
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
 }
 
-.progress .bar.width-15{
-  width: 15% ;
+.progress .bar.width-15 {
+    width: 15%;
 }
-.progress .bar.width-50{
-  width: 50%;
-}
-.progress .bar.width-100{
-  width: 100%;
 
+.progress .bar.width-50 {
+    width: 50%;
 }
+
+.progress .bar.width-100 {
+    width: 100%;
+}
+
+
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

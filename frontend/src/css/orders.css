@@ -1,0 +1,77 @@
+.trades{
+    padding: 20px;
+}
+
+button.trade {
+    float: right;
+    padding-right: 5px;
+    background-color: green;
+}
+
+button.trade a {
+    color: white;
+}
+
+tr {
+    padding: 5px;
+    border: 1px solid grey;
+}
+
+td, th {
+    text-align: center;
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
+th {
+    background-color: #000081;
+    color: white;
+}
+th.sorting_desc , th.sorting_asc{
+    cursor: pointer;
+    /**cursor: hand;*/
+}
+thead th {
+    padding: 5px 10px;
+}
+
+
+table {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    overflow: hidden;
+}
+
+.sorting_desc_icon {
+    float: right;
+    background-image: url(../assets/images/caret-down.svg);
+    background-repeat:no-repeat;
+    height: 10px;
+    width: 10px;
+    overflow: auto;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+.sorting_asc_icon{
+    /*content: "";*/
+    /*position: absolute;*/
+    /*width: 8px;*/
+    /*height: 6px;*/
+    /*background-size: 8px;*/
+    /*margin-left: 5px;*/
+    /*background: #fff;*/
+}
+.label {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.label-success {
+    background-color: #65c36e;
+}
+
+.label-important {
+    background-color: #dc1235;
+}
+

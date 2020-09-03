@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import '../App.css';
 import Spinner from "../componets/Spinner";
+import {Link} from "react-router-dom";
 
 
 function Balance() {
@@ -15,14 +16,15 @@ const [spinnerWidth, setSpinnerWidth] = useState([])
   const fetchData = async () => {
     setVisibleSpinner("show");
     setSpinnerWidth("width-15");
+
     const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
+
     setSpinnerWidth("width-50")
 
     const data = await rawData.json();
-    console.log(data);
     setPairs(data)
-    setSpinnerWidth("width-100")
 
+    setSpinnerWidth("width-100")
     setTimeout(()=>{
       setVisibleSpinner("hide");
     },1000)
@@ -31,11 +33,10 @@ const [spinnerWidth, setSpinnerWidth] = useState([])
 
   function _renderObject(objects){
     return Object.entries(objects).map(([key, value], i) => {
-      // let img = "/public/cryptocurrency/" + key.toLowerCase() + '.png';
       return (
 
         <div className="pairs bc" key={key}>
-          <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} /> <span>{key} : {value}</span>
+          <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} /> <span>{key} : {value}</span> <button className="trade"> <Link to="/addorder"> Trade </Link> </button>
         </div>
       )
     })

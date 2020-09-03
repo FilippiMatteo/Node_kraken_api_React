@@ -1,33 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import '../App.css';
+import '../css/orders.css';
 
 
 function AddOrder() {
-  // useEffect(()=>{
-  //   fetchData();
-  // },[])
+  useEffect(()=>{
+    fetchPairs();
+  },[])
 
-  // const [pairs, setPairs] = useState([])
+   const [selectedPair, setSelectedPair] = useState([])
 
-  // const fetchData = async () => {
-  //   const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
-  //   const data = await rawData.json();
-  //   console.log(data);
-  //   setPairs(data)
-  // }
+  const fetchPairs = async () => {
+    const rawData = await fetch('http://127.0.0.1:5555/kraken/allPairs');
+    const data = await rawData.json();
+    console.log(data);
+    setSelectedPair(data)
+  }
 
 
-  // function _renderObject(objects){
-  //   return Object.entries(objects).map(([key, value], i) => {
-  //     // let img = "/public/cryptocurrency/" + key.toLowerCase() + '.png';
-  //     return (
-  //
-  //       <div className="pairs bc" key={key}>
-  //         <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} /> <span>{key} : {value}</span>
-  //       </div>
-  //     )
-  //   })
-  // }
 
 
   // var objects = pairs.result || [];
@@ -35,12 +25,25 @@ function AddOrder() {
   // const keys = Object.keys(objects);
   // const value = Object.values(objects);
 
+function _renderlistPairs (objects) {
+  return Object.entries(objects).map(([key, value], i) => {
+    return (
+      <div>
 
+      </div>
+
+    )
+  });
+}
 
 
   return (
     <div className="App">
       <h1>Add Order</h1>
+
+
+        {_renderlistPairs }
+
 
 
       {/*<div className="results b">*/}

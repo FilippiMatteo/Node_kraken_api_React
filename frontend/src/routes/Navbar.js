@@ -74,6 +74,7 @@ function Navbar() {
           {/*</ul>*/}
         </li>
         <li><Link to="/addorder">Add Order</Link></li>
+        <li><Link to="/tradesHistory">Trades History</Link></li>
 
       </ul>
       <ul className="secondary">
