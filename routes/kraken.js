@@ -122,14 +122,15 @@ router.get('/balance', function (req, res, next) {
 
 });
 
+// public methods
+
 router.get('/ticker', function (req, res, next) {
   if (req.query.pair) {
     (async () => {
       // Get Ticker Info
       var response = (await kraken.api('Ticker', {pair: req.query.pair}));
 
-      // let trades = (await kraken.api('TradesHistory'));
-      // console.dir (trades.result.trades);
+
       console.dir(response);
       res.send(response)
 
@@ -143,6 +144,102 @@ router.get('/ticker', function (req, res, next) {
 
 
 
+router.get('/assets', function (req, res, next) {
+
+    (async () => {
+      // Get Assest Info
+      var response = (await kraken.api('Assets'));
+      console.dir(response);
+      res.send(response)
+
+    })();
+
+
+
+});
+
+router.get('/assetPairs', function (req, res, next) {
+
+    (async () => {
+      // Get assetPairs Info
+      var response = (await kraken.api('AssetPairs'));
+
+      console.dir(response);
+      res.send(response)
+
+    })();
+
+
+
+});
+
+router.get('/time', function (req, res, next) {
+
+    (async () => {
+      // Get time server Info
+      var response = (await kraken.api('Time'));
+      console.dir(response);
+      res.send(response)
+
+    })();
+
+
+
+});
+
+router.get('/depth', function (req, res, next) {
+
+  if (req.query.pair) {
+    (async () => {
+      // Get Depth Info
+      var response = (await kraken.api('Depth', {pair: req.query.pair}));
+      console.dir(response);
+      res.send(response)
+
+    })();
+  } else {
+    res.send("manca la pair")
+  }
+
+
+
+});
+
+router.get('/trades', function (req, res, next) {
+
+  if (req.query.pair) {
+    (async () => {
+      // Get Trades Info
+      var response = (await kraken.api('Trades', {pair: req.query.pair}));
+      console.dir(response);
+      res.send(response)
+
+    })();
+  } else {
+    res.send("manca la pair")
+  }
+
+
+
+});
+
+router.get('/spread', function (req, res, next) {
+
+  if (req.query.pair) {
+    (async () => {
+      // Get spread  Info
+      var response = (await kraken.api('Spread', {pair: req.query.pair}));
+      console.dir(response);
+      res.send(response)
+
+    })();
+  } else {
+    res.send("manca la pair")
+  }
+
+
+
+});
 
 module.exports = router;
 
