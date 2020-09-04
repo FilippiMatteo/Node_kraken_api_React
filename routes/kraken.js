@@ -100,14 +100,7 @@ router.get('/tradesHistory', function (req, res, next) {
 
 });
 
-router.get('/test', function (req, res, next) {
 
-
-    // Display user's balance
-
-  res.json({"message": "test"});
-
-});
 
 router.get('/balance', function (req, res, next) {
 

@@ -27,7 +27,7 @@ th {
     background-color: #000081;
     color: white;
 }
-th.sorting_desc , th.sorting_asc{
+th.sorting_th {
     cursor: pointer;
     /**cursor: hand;*/
 }
@@ -42,8 +42,7 @@ table {
     overflow: hidden;
 }
 
-.sorting_desc_icon {
-    float: right;
+.sorting-icon {
     background-image: url(../assets/images/caret-down.svg);
     background-repeat:no-repeat;
     height: 10px;
@@ -52,15 +51,16 @@ table {
     margin-top: 5px;
     margin-left: 5px;
 }
-.sorting_asc_icon{
-    /*content: "";*/
-    /*position: absolute;*/
-    /*width: 8px;*/
-    /*height: 6px;*/
-    /*background-size: 8px;*/
-    /*margin-left: 5px;*/
-    /*background: #fff;*/
+.sorting-icon.asc {
+    transform: rotate(180deg);
+    float: left;
+    margin-right: 10px;
 }
+.sorting-icon.desc {
+    float: right;
+    margin-left: 10px;
+}
+
 .label {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;

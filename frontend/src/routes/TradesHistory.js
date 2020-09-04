@@ -12,7 +12,7 @@ function TradesHistory() {
   const [visibleSpinner, setVisibleSpinner] = useState([])
   const [spinnerWidth, setSpinnerWidth] = useState([])
   const [visibleTable, seVisibleTable] = useState(["hide"])
-  const tableHeader = ["Pairs", "Date","Type", "Order", "Price", "Volume","Cost"]
+  const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time"},{tablename:"Type",value :"type"}, {tablename:"Order", value :"ordertype"},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Cost", value: "cost" }]
 
   const _fetchTrades = async () => {
     setVisibleSpinner("show");
@@ -35,15 +35,29 @@ function TradesHistory() {
   }
 
 
-  function _sortTrades(param){
+  function _sortTrades(param,desc){
+
+    let sortedTrades= Object.keys(trades).sort(function(a,b){
+      return trades[a][param] - trades[b][param];
+    });
+    let sorted=  sortedTrades.map( ( key)=>{
+        return trades[key];
+    })
+    if (desc) {
+      sorted.reverse();
+    }
+    setTrades (sorted);
     debugger
-    console.log(param)
   }
 
   function _renderTableHeader (arr){
     return arr.map( (item) =>{
       return (
-        <th className="sorting_desc" id={item} key={item}>{item} <div className="sorting_desc_icon" onClick={()=>_sortTrades(item,0)}></div></th>
+        <th className="sorting_th" id={item.tablename} key={item.tablename}>
+          <div className="sorting-icon asc" onClick={()=>_sortTrades(item.value,false)}></div>
+          <span>{item.tablename}</span>
+          <div className="sorting-icon desc" onClick={()=>_sortTrades(item.value,true)}></div>
+        </th>
       );
     })
   }
@@ -55,7 +69,7 @@ function TradesHistory() {
       let pair2 = value.pair.substring(5, 9)
       let date = new Date(value.time * 1000)
       let dateString = date.toLocaleDateString("it-It");
-       console.log(value)
+        // console.log(key)
       return (
 
         <tr key={key}>
