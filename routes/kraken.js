@@ -76,11 +76,24 @@ router.post('/cancelOrder', function (req, res, next) {
 });
 
 
+// for leverage open position
 router.get('/openPositions', function (req, res, next) {
 
   (async () => {
     // Display user's balance
     var response = (await kraken.api('OpenPositions'));
+    console.dir(response);
+    res.send(response)
+
+  })();
+
+});
+// for open order not closed yet
+router.get('/openOrders', function (req, res, next) {
+
+  (async () => {
+    // Display user's balance
+    var response = (await kraken.api('OpenOrders'));
     console.dir(response);
     res.send(response)
 

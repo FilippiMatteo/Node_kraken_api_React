@@ -22,6 +22,9 @@ td, th {
     padding-right: 6px;
     padding-left: 6px;
 }
+td{
+    padding: 10px;
+}
 
 th {
     background-color: #000081;
@@ -75,3 +78,8 @@ table {
     background-color: #dc1235;
 }
 
+.btn.thin {
+    /* line-height: 16px; */
+    font-size: 11px;
+    padding: 4px 9px;
+}

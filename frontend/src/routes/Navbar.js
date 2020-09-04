@@ -75,6 +75,8 @@ function Navbar() {
         </li>
         <li><Link to="/addorder">Add Order</Link></li>
         <li><Link to="/tradesHistory">Trades History</Link></li>
+        <li><Link to="/openPositions">Open Positions</Link></li>
+        <li><Link to="/openOrders">Open Orders</Link></li>
 
       </ul>
       <ul className="secondary">
