@@ -26,7 +26,7 @@ function App() {
           <Route exact path="/" component={Home}></Route>
           <Route exact path="/balance" component={Balance}></Route>
           <Route exact path="/about" component={About}></Route>
-          <Route exact path="/addorder" component={AddOrder}></Route>
+          <Route exact path="/addorder/:pair" component={AddOrder}></Route>
           <Route exact path="/tradesHistory" component={TradesHistory}></Route>
           <Route exact path="/openPositions" component={OpenPositions}></Route>
           <Route exact path="/openOrders" component={OpenOrders}></Route>

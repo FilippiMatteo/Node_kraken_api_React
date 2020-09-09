@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import '../App.css';
 import Spinner from "../componets/Spinner";
 import {Link} from "react-router-dom";
+import {isFiat} from "../utilities";
 
 
 function Balance() {
@@ -33,10 +34,14 @@ const [spinnerWidth, setSpinnerWidth] = useState([])
 
   function _renderObject(objects){
     return Object.entries(objects).map(([key, value], i) => {
+      let buttonTradeClass= "trade ";
+      buttonTradeClass+= isFiat(key.substring(1)) || key==="KFEE" ? "hide" : "";
       return (
 
         <div className="pairs bc" key={key}>
-          <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} /> <span>{key} : {value}</span> <button className="trade"> <Link to="/addorder"> Trade </Link> </button>
+          <img className="crypto-png" src={`${process.env.PUBLIC_URL}/cryptocurrency/${key.toLowerCase()}.png`} alt={key.toLowerCase()} />
+          <span>{key} : {value}</span>
+          <button className={buttonTradeClass}  > <Link to={`/addorder/`+key}  > Trade </Link> </button>
         </div>
       )
     })

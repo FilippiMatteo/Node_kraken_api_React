@@ -83,3 +83,174 @@ table {
     font-size: 11px;
     padding: 4px 9px;
 }
+
+/*  add order */
+
+.tab-pane {
+    padding: 0 32px;
+}
+
+.nav-pills>.active>a, .nav-pills>.active>a:hover, .nav-tabs>.active>a, .nav-tabs>.active>a:hover, input, select {
+    outline: 0;
+}
+.nav-pills.mini a {
+    font-size: 11px;
+    padding: 2px 5px;
+}
+
+.nav-pills>li>a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    color: #242424;
+
+}
+.nav-pills>li>a, .nav-tabs>li>a {
+    padding-right: 12px;
+    padding-left: 12px;
+    margin-right: 2px;
+    line-height: 14px;
+
+}
+
+a.active{
+    background-color: #000081;
+    color: #fff !important;
+}
+.nav-pills a:hover{
+    color: #fff;
+    text-decoration: none;
+    background-color: lightgray;
+}
+
+.nav-pills.mini a {
+    font-size: 11px;
+    padding: 2px 5px;
+}
+
+.title {
+    color: #242424;
+}
+.line-title .title {
+    background-color: #fff;
+}
+.line-title .title {
+    outline: none;
+    margin-left: 25px;
+    border-radius: 3px;
+    padding: 5px;
+}
+.line-title {
+    line-height: 0;
+    padding: 0;
+    height: 0;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+    font-size: 12px;
+    font-weight: 400;
+    margin: 30px 0;
+}
+
+.vmarg20top {
+    margin-top: 20px!important;
+}
+.margin-left-20{
+    margin-left:20px;
+}
+.hmarg20right {
+    margin-right: 20px;
+}
+
+h5, h4, h5 {
+    font-family: var(--special-font-bold),Celias Bold,Helvetica,Arial;
+    text-align: left;
+}
+
+.input-append .add-on, .input-prepend .add-on {
+    display: inline-block;
+    width: auto;
+    height: 20px;
+    min-width: 16px;
+    padding: 4px 5px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: center;
+    text-shadow: 0 1px 0 #fff;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 0px 3px 3px 0px;
+}
+
+.input-append, .input-prepend, .input-medium, .input-small{
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+
+}
+.input-medium, .input-small {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-size: 14px;
+    padding: 4px 4px 3px;
+}
+a.btn {
+    color: #333;
+}
+.btn.dropdown-toggle{
+    vertical-align: middle;
+}
+.btn.dropdown-toggle, .add-on.pair{
+    padding: 4px 5px;
+    height: auto;
+}
+
+form{
+    font-size: 14px;
+}
+
+.form-order-simple {
+    text-align: center;
+    margin: 10px;
+}
+.hmarg20right {
+    margin-right: 20px;
+}
+
+.form-order-simple div.ib {
+    vertical-align: top;
+    text-align: left;
+}
+.ib {
+    display: inline-block;
+}
+.control-group {
+    margin-bottom: 10px;
+}
+
+.btn-group button{
+    font-size: 14px;
+    padding-bottom: 3px;
+    padding-top: 4px;
+}
+.control-hint {
+    float: none;
+    font-size: 11px;
+    line-height: 13px;
+    margin: 0;
+    color: #4c4c4c;
+    padding: 6px 0 0;
+}
+div.ib.symbol {
+    font-weight: 800;
+    font-size: 20px;
+    margin: 0 10px;
+    padding-top: 0px;
+}

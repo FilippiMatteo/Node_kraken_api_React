@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import '../App.css';
 import Spinner from "../componets/Spinner";
-import {isFiat} from "../utilities";
+import {isFiat,getFiatChar} from "../utilities";
+
 
 function OpenOrders() {
   useEffect(() => {
@@ -27,22 +28,69 @@ function OpenOrders() {
   }, {tablename: "Cost", value: "cost", isSortable: true}, {tablename: "close", value: "X"}]
 
   const _fetchOpenOrder = async () => {
-    setVisibleSpinner("show");
-    setSpinnerWidth("width-15");
+    try {
+      setVisibleSpinner("show");
+      setSpinnerWidth("width-15");
 
-    const rawData = await fetch('http://127.0.0.1:5555/kraken/openOrders');
+      const rawData = await fetch('http://127.0.0.1:5555/kraken/openOrders').catch( (e) => {
+        console.error(e)
+      });
 
-    setSpinnerWidth("width-50")
+      setSpinnerWidth("width-50")
 
-    const data = await rawData.json();
+      const data = await rawData.json();
 
-    setOrders(data.result.open || [])
-    setSpinnerWidth("width-100")
-    seVisibleTable("show");
+      setOrders(data.result.open || [])
+      setSpinnerWidth("width-100")
+      seVisibleTable("show");
 
-    setTimeout(() => {
+      setTimeout(() => {
+        setVisibleSpinner("hide");
+      }, 1000)
+    }catch (e) {
+      console.error("errore chiamata",e);
+      setSpinnerWidth("width-100")
       setVisibleSpinner("hide");
-    }, 1000)
+
+    }
+
+  }
+
+  const canceldOrder = async (key) => {
+    try {
+      setVisibleSpinner("show");
+      setSpinnerWidth("width-15");
+
+      const rawData = await fetch('http://127.0.0.1:5555/kraken/cancelOrder',{ method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'txid': key})
+        }).catch( (e) => {
+        console.error(e)
+      });
+
+      setSpinnerWidth("width-50")
+
+      const data = await rawData.json();
+
+      setOrders(data.result.open || [])
+      setSpinnerWidth("width-100")
+      seVisibleTable("show");
+
+      setTimeout(() => {
+        setVisibleSpinner("hide");
+      }, 1000)
+    }catch (e) {
+      console.error("errore chiamata",e);
+      setSpinnerWidth("width-100")
+      setVisibleSpinner("hide");
+
+    }
+
   }
 
 
@@ -86,29 +134,44 @@ function OpenOrders() {
 
   function _renderlistOrder(objects) {
 
-    return Object.entries(objects).map(([key, value], i) => {
-      let pair1 = value.descr.pair.substring(0, 3);
-      let pair2 = value.descr.pair.substring(3, 6);
-      let date = new Date(value.opentm * 1000);
-      let dateString = date.toLocaleDateString("it-It");
-      // console.log(key)
+    if (objects.length>0){
+      return Object.entries(objects).map(([key, value], i) => {
+        let pair1 = value.descr.pair.substring(0, 3);
+        let pair2 = value.descr.pair.substring(3, 6);
+        let date = new Date(value.opentm * 1000);
+        let dateString = date.toLocaleDateString("it-It");
+        //  console.log(key) // log OCI2HW-BVUJ3-GVMUWU per esempio
+        return (
+
+          <tr key={key}>
+
+            <td>{pair1}/{pair2}</td>
+            <td> {dateString} {date.getHours()}:{date.getMinutes()}:{date.getSeconds()} </td>
+            <td>{value.descr.type}</td>
+            <td>{value.descr.ordertype}</td>
+            <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.descr.price).toFixed(2) : value.descr.price} </td>
+            <td>{pair1} {isFiat(pair1) ? getFiatChar(pair1) + parseFloat(value.vol).toFixed(2) : value.vol}</td>
+            <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.descr.cost).toFixed(2) : value.descr.cost}</td>
+            <td ><button className="btn btn-danger thin tt btn-cancel" onClick={()=>{canceldOrder(key)}}>X</button></td>
+
+            {/*<td > <span className={ value.posstatus=="closed" ? "label label-success": "label label-important" }>{value.posstatus} </span></td>*/}
+          </tr>
+
+
+        )
+      });
+    }else{
       return (
+        <tr>
 
-        <tr key={key}>
-          <td>{pair1}/{pair2}</td>
-          <td> {dateString} {date.getHours()}:{date.getMinutes()}:{date.getSeconds()} </td>
-          <td>{value.descr.type}</td>
-          <td>{value.descr.ordertype}</td>
-          <td>{pair2} {isFiat(pair2) ? parseFloat(value.descr.price).toFixed(2) : value.descr.price} </td>
-          <td>{pair1} {isFiat(pair1) ? parseFloat(value.vol).toFixed(2) : value.vol}</td>
-          <td>{pair2} {isFiat(pair2) ? parseFloat(value.descr.cost).toFixed(2) : value.descr.cost}</td>
-          <td ><button className="btn btn-danger thin tt btn-cancel">X</button></td>
-          {/*<td > <span className={ value.posstatus=="closed" ? "label label-success": "label label-important" }>{value.posstatus} </span></td>*/}
+            No results
+
         </tr>
+      );
+    }
 
 
-      )
-    });
+
   }
 
   var objects = orders || [];
