@@ -154,6 +154,9 @@ body {
     color: #fff;
     text-decoration: none;
 }
+.kraken-header .top-nav>ul.primary a:hover{
+    color: grey;
+}
 
 .kraken-header .top-nav>ul.secondary {
     flex-grow: 0;
