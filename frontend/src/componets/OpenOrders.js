@@ -9,7 +9,7 @@ function OpenOrders() {
     _fetchOpenOrder();
   }, [])
 
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState({})
   const [visibleSpinner, setVisibleSpinner] = useState([])
   const [spinnerWidth, setSpinnerWidth] = useState([])
   const [visibleTable, seVisibleTable] = useState(["hide"])
@@ -25,7 +25,7 @@ function OpenOrders() {
     tablename: "Volume",
     value: "vol",
     isSortable: true
-  }, {tablename: "Cost", value: "cost", isSortable: true}, {tablename: "close", value: "X"}]
+  }, {tablename: "Cost", value: "cost", isSortable: true}, {tablename: "", value: "X"}]
 
   const _fetchOpenOrder = async () => {
     try {
@@ -134,7 +134,7 @@ function OpenOrders() {
 
   function _renderlistOrder(objects) {
 
-    if (objects.length>0){
+    if (Object.getOwnPropertyNames(objects).length > 0){
       return Object.entries(objects).map(([key, value], i) => {
         let pair1 = value.descr.pair.substring(0, 3);
         let pair2 = value.descr.pair.substring(3, 6);
@@ -151,7 +151,7 @@ function OpenOrders() {
             <td>{value.descr.ordertype}</td>
             <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.descr.price).toFixed(2) : value.descr.price} </td>
             <td>{pair1} {isFiat(pair1) ? getFiatChar(pair1) + parseFloat(value.vol).toFixed(2) : value.vol}</td>
-            <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.descr.cost).toFixed(2) : value.descr.cost}</td>
+            <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.cost).toFixed(2) : value.cost}</td>
             <td ><button className="btn btn-danger thin tt btn-cancel" onClick={()=>{canceldOrder(key)}}>X</button></td>
 
             {/*<td > <span className={ value.posstatus=="closed" ? "label label-success": "label label-important" }>{value.posstatus} </span></td>*/}
@@ -163,9 +163,7 @@ function OpenOrders() {
     }else{
       return (
         <tr>
-
             No results
-
         </tr>
       );
     }
@@ -174,7 +172,6 @@ function OpenOrders() {
 
   }
 
-  var objects = orders || [];
   return (
     <div className="App">
       <h1>Open Order</h1>
@@ -191,7 +188,7 @@ function OpenOrders() {
 
           </thead>
           <tbody>
-          {_renderlistOrder(objects)}
+          {_renderlistOrder(orders)}
           </tbody>
         </table>
       </div>
