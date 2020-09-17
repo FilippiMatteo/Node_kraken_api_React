@@ -7,56 +7,87 @@ import '../css/orders.css';
 
 
 function AddOrder() {
-  useEffect(() => {
-    fetchPairs();
-  }, [])
 
+  let tooltip_volume_pair1 = document.querySelector("#tooltip_volume_pair1");
 
   const match = useRouteMatch('/addorder/:pair');
-  const [selectedPair, setSelectedPair] = useState([match.params.pair,"EUR"]);
+  const [selectedPair, setSelectedPair] = useState([match.params.pair, "EUR"]);
+  const [volumePair, setVolumePair] = useState();
+  const [totalPair, setTotalPair] = useState();
+  const [balance, setBalance] = useState();
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [price, setPrice] = useState(0);
+
   //const [selectedSecondPair, setSelectedSecondPair] = useState("EUR");
 
   // change class for selected and active Element
+
+  const [disableLimitPrice, setDisableLimitPrice] = useState([false, "input-small ralign hmarg0right","input-medium ralign hmarg0right"]);
   const [navbarOrder, setNavBarOrder] = useState(["active", "", ""]);
   const [orderViewArray, setorderViewArray] = useState(["show", "hide", "hide"]);
   const [btnOrderType, setBtnOrderType] = useState(["btn btn-success", "btn"]);
   const [btnType, setBtnType] = useState(["btn btn-type btn-small", "btn btn-type btn-small active"]);
-  const [paramsOrder,setParamsOrder] = useState({
+  const [paramsOrder, setParamsOrder] = useState({
     pair: "XBTUSD",
-      type: "buy",
-      ordertype: "market",
-      //   leverage: "1:1",
-      price: "0.1",
-      volume: 1
+    type: "buy",
+    ordertype: "limit",
+    //   leverage: "1:1",
+    price: "0.1",
+    volume: volumePair
   })
   const [visibleListSecondPairs, setVisibleListSecondPairs] = useState("dropdown-menu small");
 
-  let params = {
-    pair: "XBTUSD",
-    type: "buy",
-    ordertype: "market",
- //   leverage: "1:1",
-    price: "0.1",
-    volume: 1
-  };
+  useEffect(() => {
+    fetchPairs();
+    _fetchBalance().then(() => {
+
+    })
+  }, [])
+
+
+  const _fetchBalance = async () => {
+    // setVisibleSpinner("show");
+    // setSpinnerWidth("width-15");
+
+    const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
+
+    // setSpinnerWidth("width-50")
+
+    const data = await rawData.json();
+
+    setBalance(data.result || undefined);
+
+    Object.entries(data.result).map(([key, value], i) => {
+      if (key === selectedPair[0]) {
+        setTotalPair(value);
+        return;
+      }
+    });
+
+    // setSpinnerWidth("width-100")
+    setTimeout(() => {
+      // setVisibleSpinner("hide");
+    }, 1000)
+  }
 
   const fetchPairs = async () => {
-  //  const rawData = await fetch('http://127.0.0.1:5555/kraken/assetPairs');
-  //  const data = await rawData.json();
-  //  console.log(data);
+    //  const rawData = await fetch('http://127.0.0.1:5555/kraken/assetPairs');
+    //  const data = await rawData.json();
+    //  console.log(data);
     //  setSelectedPair(data)
   }
 
   const addOrder = async () => {
-    const rawData = await fetch('http://127.0.0.1:5555/kraken/addOrder',{ method: 'POST',
+    const rawData = await fetch('http://127.0.0.1:5555/kraken/addOrder', {
+      method: 'POST',
       mode: 'cors', // no-cors, *cors, same-origin
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(params)
-    }).catch( (e) => {
+      body: JSON.stringify(paramsOrder)
+    }).catch((e) => {
       console.error(e)
       alert(e)
     });
@@ -65,22 +96,15 @@ function AddOrder() {
     console.log(data)
   }
 
-  // var objects = pairs.result || [];
-
-  // const keys = Object.keys(objects);
-  // const value = Object.values(objects);
-
-  /* function _renderlistPairs (objects) {
-    return Object.entries(objects).map(([key, value], i) => {
-      return (
-        <div>
-
-        </div>
-
-      )
-    });
-  } */
-
+  function _maxVolume() {
+    let val = "";
+    Object.entries(balance).map(([key, value], i) => {
+      if (key === selectedPair[0]) {
+        val = value;
+      }
+    })
+    setVolumePair(val);
+  }
 
   function _showOrder(type) {
     console.log(type)
@@ -112,10 +136,45 @@ function AddOrder() {
     }
   }
 
+  function handleVolumePair(e) {
+
+    let value = e.target.value.replace(/[^\d.-]/g, '');
+
+    if (value != e.target.value) {
+      tooltip_volume_pair1.classList.remove('hide');
+      tooltip_volume_pair1.classList.add('show');
+
+    } else {
+      tooltip_volume_pair1.classList.remove('show');
+      tooltip_volume_pair1.classList.add('hide');
+    }
+    setVolumePair(value);
+    setTotalAmount(value * price);
+  }
+
+  function handlePrice(e) {
+    let value = e.target.value.replace(/[^\d.-]/g, '');
+
+    if (value != e.target.value) {
+      tooltip_volume_pair1.classList.remove('hide');
+      tooltip_volume_pair1.classList.add('show');
+
+    } else {
+      tooltip_volume_pair1.classList.remove('show');
+      tooltip_volume_pair1.classList.add('hide');
+    }
+    setPrice(value);
+    setTotalAmount(value * volumePair);
+  }
+
+  function _cancelVolumePair() {
+    setVolumePair("");
+  }
+
   return (
     <div className="App">
       <h1>Add Order</h1>
-      {selectedPair}
+      {selectedPair} {totalPair}
 
       <div className="tab-pane active" id="new-order">
         <div id="order-form-nav">
@@ -147,38 +206,51 @@ function AddOrder() {
                 <div className="ib btn-group" data-toggle="buttons-radio" name="type">
                   <button type="button" value="buy" className={btnOrderType[0]} autoComplete="off" onClick={() => {
                     setBtnOrderType(["btn btn-success", "btn"])
-                    let po= paramsOrder;
-                    po.type= "buy";
+                    let po = paramsOrder;
+                    po.type = "buy";
                     setParamsOrder(po);
                   }}>Buy
                   </button>
                   <button type="button" value="sell" className={btnOrderType[1]} autoComplete="off" onClick={() => {
                     setBtnOrderType(["btn", "btn btn-danger"]);
                     let po = paramsOrder;
-                    po.type= "sell"
+                    po.type = "sell"
                     setParamsOrder(po);
                   }}>Sell
                   </button>
                 </div>
               </div>
 
+              <div className="btn totalcoin" onClick={() => {
+                _maxVolume()
+              }}>All In
+              </div>
+
               <div className="ib control-group">
                 <div className="input-append">
-                  <input placeholder="Amount" tabIndex="1" type="text" autoComplete="off"
+                  <input placeholder="Amount" tabIndex="1" type="text" autoComplete="off" value={volumePair}
+                         onChange={handleVolumePair}
                          className="input-medium ralign hmarg0right" name="volume"/>
+                  <div id="tooltip_volume_pair1" className="tooltip hide"> Only digit and "." for decimal</div>
+
                   <div className="ib posrel">
                     <div className="dropdown" onClick={() => {
                       toggleVisibilitySecondPair()
                     }}>
-                      <a title="" className="btn add-on volume-currency-toggle dropdown-toggle tt" data-toggle="dropdown"
+                      <a title="" className="btn add-on volume-currency-toggle dropdown-toggle tt"
+                         data-toggle="dropdown"
                          data-original-title="Click to switch amount currency.">
                         {selectedPair[0]} <span className="caret"></span>
                       </a>
                       <ul className={visibleListSecondPairs}>
-                        <li onClick={()=>{setSelectedPair([selectedPair[0],selectedPair[1]])}}>
-                          <a href="#" >({selectedPair[0]})</a>
+                        <li onClick={() => {
+                          setSelectedPair([selectedPair[0], selectedPair[1]])
+                        }}>
+                          <a href="#">({selectedPair[0]})</a>
                         </li>
-                        <li onClick={()=>{setSelectedPair([selectedPair[1],selectedPair[0]])}} >
+                        <li onClick={() => {
+                          setSelectedPair([selectedPair[1], selectedPair[0]])
+                        }}>
                           <a href="#">({selectedPair[1]})</a>
                         </li>
                       </ul>
@@ -188,13 +260,17 @@ function AddOrder() {
                 <p className="control-hint">Amount of {selectedPair[0]} to {paramsOrder.type}. </p>
 
               </div>
-              <div className="ib symbol calc-op-symbol">×</div>
+              <div className="ib symbol calc-op-symbol pointer" onClick={() => {
+                _cancelVolumePair()
+              }}>×
+              </div>
 
               <div className="ib control-group">
                 <div className="ib">
                   <div className="input-append">
-                    <input type="text" placeholder="Price" tabIndex="2" className="input-small ralign hmarg0right"
-                           name="price" autoComplete="off"/><span
+                    <input type="text" placeholder="Price" tabIndex="2" className={disableLimitPrice[1]} value={price}
+                           onChange={handlePrice}
+                           name="price" autoComplete="off" disabled={disableLimitPrice[0]}/><span
                     className="add-on pair hmarg20right">EUR</span>
                   </div>
                 </div>
@@ -203,37 +279,46 @@ function AddOrder() {
                     <button type="button" className={btnType[0]} value="market" autoComplete="off" onClick={() => {
                       setBtnType(["btn btn-type btn-small active", "btn btn-type btn-small"]);
                       let po = paramsOrder;
-                      po.ordertype="market";
+                      po.ordertype = "market";
                       setParamsOrder(po);
+                      setDisableLimitPrice([true, 'input-small ralign hmarg0right disabled',"input-medium ralign hmarg0right disabled"]);
+
                     }}>Market
                     </button>
                     <button type="button" className={btnType[1]} value="limit" autoComplete="off" onClick={() => {
                       setBtnType(["btn btn-type btn-small", "btn btn-type btn-small active"]);
                       let po = paramsOrder;
-                      po.ordertype="limit";
+                      po.ordertype = "limit";
                       setParamsOrder(po);
+                      setDisableLimitPrice([false, 'input-small ralign hmarg0right',"input-medium ralign hmarg0right"]);
+
                     }}>Limit
                     </button>
                   </div>
                 </div>
-                <p className="control-hint" name="ordertype-hint"><span className="capitalize">{paramsOrder.type}</span> at a {paramsOrder.ordertype} price per {selectedPair[0]}.</p>
+                <p className="control-hint" name="ordertype-hint"><span
+                  className="capitalize">{paramsOrder.type}</span> at a {paramsOrder.ordertype} price
+                  per {selectedPair[0]}.</p>
               </div>
               <div className="ib symbol">=</div>
               <div className="ib control-group">
                 <div className="input-append">
-                  <input placeholder="Total" type="text" tabIndex="3" autoComplete="off"
-                         className="input-medium ralign hmarg0right" name="total"/><span
+                  <input placeholder="Total" type="text" tabIndex="3" autoComplete="off" value={totalAmount}
+                         className={disableLimitPrice[2]} name="total" disabled={disableLimitPrice[0]} /><span
                   className="add-on pair">EUR</span>
                 </div>
-                <p className="control-hint" name="total-hint">Estimated amount of EUR to spend.</p>
+                <p className="control-hint" name="total-hint">Estimated amount of EUR.</p>
               </div>
             </div>
 
             <div className="row vpad20 center posrel">
               <span className="">
                 <button autoComplete="off" type="button" className="btn-order-review btn submit btn-success btn-large"
-                onClick={()=>{addOrder()}}>
-                  <span className="capitalize">{paramsOrder.type}</span> <span>{selectedPair[0]} with {selectedPair[1]}</span>
+                        onClick={() => {
+                          addOrder()
+                        }}>
+                  <span
+                    className="capitalize">{paramsOrder.type}</span> <span>{selectedPair[0]} with {selectedPair[1]}</span>
                 </button>
               </span>
               <span id="skip-confirmation-wrap" className="">
@@ -1446,7 +1531,7 @@ function AddOrder() {
                         <label className="control-label">Start</label>
                         <div className="controls">
                           <select name="start" className="input-large" autoComplete="off">
-                            <option >Now</option>
+                            <option>Now</option>
                             <option value="custom">Custom...</option>
                           </select>
                           <div className="custom-start-wrap hidden2 vmarg20top">
@@ -1488,7 +1573,7 @@ function AddOrder() {
                             <div className="ib input-append bootstrap-timepicker-component">
                               <input name="expiretime" autoComplete="off" readOnly="readonly"
                                      className="timepicker-default input-smaller hmarg0right" type="text"
-                                     /><span
+                              /><span
                               className="add-on"><i className="icon-time"></i> </span>
                             </div>
                             <a className="hpad10left smaller expirereset">Reset</a>
@@ -1530,7 +1615,7 @@ function AddOrder() {
                       <label className="control-label">Order Type</label>
                       <div className="controls">
                         <select name="cond-eordertype" className="input-large ordertype" autoComplete="off">
-                          <option >None</option>
+                          <option>None</option>
                           <option value="market">Market</option>
                           <option value="limit">Limit</option>
                           <option value="stop-loss">Stop Loss</option>
