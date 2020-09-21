@@ -12,7 +12,7 @@ function TradesHistory() {
   const [visibleSpinner, setVisibleSpinner] = useState([])
   const [spinnerWidth, setSpinnerWidth] = useState([])
   const [visibleTable, seVisibleTable] = useState(["hide"])
-  const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time"},{tablename:"Type",value :"type"}, {tablename:"Order", value :"ordertype"},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Cost", value: "cost" }]
+  const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time"},{tablename:"Type",value :"type"}, {tablename:"Order", value :"ordertype"},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Cost", value: "cost" },{tablename: "Fee", value :"fee"}]
 
   const _fetchTrades = async () => {
     setVisibleSpinner("show");
@@ -77,9 +77,10 @@ function TradesHistory() {
           <td> {dateString} {date.getHours()}:{date.getMinutes()}:{date.getSeconds()} </td>
           <td>{value.type}</td>
           <td>{value.ordertype}</td>
-          <td>{pair2} {isFiat(pair2)? parseFloat(value.price).toFixed(2) : value.price } </td>
-          <td>{pair1} {isFiat(pair1)? parseFloat(value.vol).toFixed(2) : value.vol }</td>
+          <td>{pair2} {isFiat(pair2)? parseFloat(value.price).toFixed(4) : value.price } </td>
+          <td>{pair1} {isFiat(pair1)? parseFloat(value.vol).toFixed(4) : value.vol }</td>
           <td>{pair2} {isFiat(pair2)? parseFloat(value.cost).toFixed(2) : value.cost  }</td>
+          <td>{value.fee} </td>
           {/*<td > <span className={ value.posstatus=="closed" ? "label label-success": "label label-important" }>{value.posstatus} </span></td>*/}
         </tr>
 

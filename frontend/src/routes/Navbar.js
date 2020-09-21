@@ -5,15 +5,53 @@ import {Link} from "react-router-dom";
 
 function Navbar() {
 
-  const [navbarSelected, setNavbarSelected] = useState(["header-selected", "", "", "", "", "",""]);
+  const [navbarSelected, setNavbarSelected] = useState(() =>{
 
+    return _undelinePath();
+  });
+
+
+
+
+  function _undelinePath() {
+
+    let path = window.location.pathname.substring(0);
+    path = path.substring(0,path.indexOf("/"));
+
+    let index;
+    let array = ["", "", "", "", "", "", ""];
+    switch (path) {
+      case 'balance':
+        index=1;
+        break
+      case 'addorder':
+        index=2;
+        break
+      case 'tradesHistory':
+        index=3;
+        break
+      case 'openPositions':
+        index=4;
+        break
+      case 'openOrders':
+        index=5;
+        break
+
+      default :
+        index = 0;
+    }
+     array[index] = "header-selected";
+    return array
+  }
 
   return (
+
+
     <nav className="top-nav">
       <ul className="primary">
 
         <li className={navbarSelected[0]} onClick={() => {
-          setNavbarSelected(["header-selected", "", "", "", "", "",""])
+          setNavbarSelected(["header-selected", "", "", "", "", "", ""])
         }}>
           <Link to="/">Home </Link>
           {/*<ul className="hidden-submenu">*/}
@@ -49,7 +87,7 @@ function Navbar() {
 
 
         <li className={navbarSelected[1]} onClick={() => {
-          setNavbarSelected(["", "header-selected", "", "", "", "",""])
+          setNavbarSelected(["", "header-selected", "", "", "", "", ""])
         }}>
           <Link to="/balance">Balance</Link>
           {/*<ul className="hidden-submenu">*/}
@@ -83,19 +121,19 @@ function Navbar() {
           {/*</ul>*/}
         </li>
         <li className={navbarSelected[2]} onClick={() => {
-          setNavbarSelected(["", "", "header-selected", "", "", "",""])
+          setNavbarSelected(["", "", "header-selected", "", "", "", ""])
         }}>
           <Link to={`/addorder/XXBT`}>Add Order</Link></li>
         <li className={navbarSelected[3]} onClick={() => {
-          setNavbarSelected(["", "", "", "header-selected", "", "",""])
+          setNavbarSelected(["", "", "", "header-selected", "", "", ""])
         }}>
           <Link to="/tradesHistory">Trades History</Link></li>
         <li className={navbarSelected[4]} onClick={() => {
-          setNavbarSelected(["", "", "", "", "header-selected", "",""])
+          setNavbarSelected(["", "", "", "", "header-selected", "", ""])
         }}>
           <Link to="/openPositions">Open Positions</Link></li>
         <li className={navbarSelected[5]} onClick={() => {
-          setNavbarSelected(["", "", "", "", "", "header-selected",""])
+          setNavbarSelected(["", "", "", "", "", "header-selected", ""])
         }}
         ><Link to="/openOrders"
                onClick={() => {

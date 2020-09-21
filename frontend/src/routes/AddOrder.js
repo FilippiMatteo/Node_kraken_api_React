@@ -303,7 +303,7 @@ function AddOrder() {
               <div className="ib symbol">=</div>
               <div className="ib control-group">
                 <div className="input-append">
-                  <input placeholder="Total" type="text" tabIndex="3" autoComplete="off" value={totalAmount}
+                  <input placeholder="Total" type="text" tabIndex="3" autoComplete="off" value={totalAmount} onChange={()=>{}}
                          className={disableLimitPrice[2]} name="total" disabled={disableLimitPrice[0]} /><span
                   className="add-on pair">EUR</span>
                 </div>

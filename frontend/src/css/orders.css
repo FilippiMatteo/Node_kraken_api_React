@@ -31,7 +31,7 @@ th {
     color: white;
 }
 th.sorting_th {
-    cursor: pointer;
+   /* cursor: pointer; */
     /**cursor: hand;*/
 }
 thead th {
@@ -53,6 +53,7 @@ table {
     overflow: auto;
     margin-top: 5px;
     margin-left: 5px;
+    cursor: pointer;
 }
 .sorting-icon.asc {
     transform: rotate(180deg);
