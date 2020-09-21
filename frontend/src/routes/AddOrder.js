@@ -48,12 +48,12 @@ function AddOrder() {
     setSpinnerWidth("width-15");
     Promise.all([()=>{ setSpinnerWidth("width-50")}, fetchDataFromApi("assetPairs"),fetchDataFromApi("balance")]).then( (ris) =>{
       _getBalance(ris[2]).then(r =>{}) ;
-      _getAssetPairs(ris[1]).then(r =>{
-        setSpinnerWidth("width-100")
-        setTimeout(() => {
-          setVisibleSpinner("hide");
-        }, 1000);
-      });
+      _getAssetPairs(ris[1]).then(r =>{});
+
+      setSpinnerWidth("width-100")
+      setTimeout(() => {
+        setVisibleSpinner("hide");
+      }, 1000);
 
     }).catch((e)=>{
       alert(e);
