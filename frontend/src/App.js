@@ -13,7 +13,7 @@ import AddOrder from "./routes/AddOrder";
 import TradesHistory from "./routes/TradesHistory";
 import OpenPositions from "./componets/OpenPositions";
 import OpenOrders from "./componets/OpenOrders";
-
+import OpenTrades from "./routes/OpenTrades";
 
 
 
@@ -30,6 +30,7 @@ function App() {
           <Route exact path="/tradesHistory" component={TradesHistory}></Route>
           <Route exact path="/openPositions" component={OpenPositions}></Route>
           <Route exact path="/openOrders" component={OpenOrders}></Route>
+          <Route exact path="/tradesOpened" component={OpenTrades}></Route>
           <Route exact path="/loging" component={Login}></Route>
           <Route exact path="/signup" component={Signup}></Route>
         </Switch>

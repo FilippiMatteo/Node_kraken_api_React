@@ -12,7 +12,7 @@ function OpenPositions() {
   const [visibleSpinner, setVisibleSpinner] = useState([])
   const [spinnerWidth, setSpinnerWidth] = useState([])
    const [visibleTable, seVisibleTable] = useState(["hide"])
-   const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time"},{tablename:"Type",value :"type"}, {tablename:"Order", value :"ordertype"},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Cost", value: "cost" }]
+   const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time", isSortable: true},{tablename:"Type",value :"type", isSortable: true }, {tablename:"Order", value :"ordertype", isSortable: true},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Vol Closed", value: "vol_closed"},{tablename: "Cost", value: "cost" } ,{tablename: "Fee", value: "fee"},{tablename: "Terms",value: "terms"},{tablename: "Status",value: "posstatus"}, {tablename: "", value: "X"}]
 
   const _fetchOpenPositions = async () => {
     setVisibleSpinner("show");
@@ -24,13 +24,50 @@ function OpenPositions() {
 
     const data = await rawData.json();
 
-    setPositions(data.result.positions || [])
+    setPositions(data.result || [])
     setSpinnerWidth("width-100")
     seVisibleTable("show");
 
     setTimeout(() => {
       setVisibleSpinner("hide");
     }, 1000)
+  }
+
+  const canceldOrder = async (key) => {
+    try {
+      setVisibleSpinner("show");
+      setSpinnerWidth("width-15");
+
+      const rawData = await fetch('http://127.0.0.1:5555/kraken/cancelOrder',{ method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'txid': key})
+      }).catch( (e) => {
+        console.error(e)
+      });
+
+      setSpinnerWidth("width-50")
+
+      const data = await rawData.json();
+
+      setPositions(data.result || [])
+      setSpinnerWidth("width-100")
+      seVisibleTable("show");
+
+      setTimeout(() => {
+        setVisibleSpinner("hide");
+      }, 1000)
+    }catch (e) {
+      console.error("errore chiamata",e);
+      setSpinnerWidth("width-100")
+      setVisibleSpinner("hide");
+
+    }
+
   }
 
 
@@ -49,17 +86,28 @@ function OpenPositions() {
     debugger
   }
 
-  function _renderTableHeader (arr){
-    return arr.map( (item) =>{
-      return (
-        <th className="sorting_th" id={item.tablename} key={item.tablename}>
-          <div className="sorting-icon asc" onClick={()=>_sortTrades(item.value,false)}></div>
-          <span>{item.tablename}</span>
-          <div className="sorting-icon desc" onClick={()=>_sortTrades(item.value,true)}></div>
-        </th>
-      );
-    })
+  function _renderTableHeader(arr) {
+    return arr.map((item) => {
+        if (item.isSortable) {
+          return (
+            <th className="sorting_th" id={item.tablename} key={item.tablename}>
+              <div className="sorting-icon asc" onClick={() => _sortTrades(item.value, false)}></div>
+              <span>{item.tablename}</span>
+              <div className="sorting-icon desc" onClick={() => _sortTrades(item.value, true)}></div>
+            </th>
+          );
+        } else {
+          return (
+            <th className="sorting_th" id={item.tablename} key={item.tablename}>
+              <span>{item.tablename}</span>
+            </th>
+          );
+        }
+
+      }
+    )
   }
+
 
 
   function _renderlistTrades(objects) {
@@ -76,9 +124,16 @@ function OpenPositions() {
           <td> {dateString} {date.getHours()}:{date.getMinutes()}:{date.getSeconds()} </td>
           <td>{value.type}</td>
           <td>{value.ordertype}</td>
-          <td>{pair2} {isFiat(pair2)? parseFloat(value.price).toFixed(2) : value.price } </td>
+          <td>{value.margin} </td>
           <td>{pair1} {isFiat(pair1)? parseFloat(value.vol).toFixed(2) : value.vol }</td>
+          <td>{value.vol_closed }</td>
           <td>{pair2} {isFiat(pair2)? parseFloat(value.cost).toFixed(2) : value.cost  }</td>
+          <td>{value.fee}</td>
+          <td>{value.terms}</td>
+          <td>{value.posstatus}</td>
+          <td ><button className="btn btn-danger thin tt btn-cancel" onClick={()=>{canceldOrder(key)}}>X</button></td>
+
+
           {/*<td > <span className={ value.posstatus=="closed" ? "label label-success": "label label-important" }>{value.posstatus} </span></td>*/}
         </tr>
 

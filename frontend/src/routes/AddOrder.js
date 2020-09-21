@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {useRouteMatch} from 'react-router-dom';
+import Spinner from "../componets/Spinner";
 
+import {fetchDataFromApi}  from "../utilities";
 
 import '../App.css';
 import '../css/orders.css';
@@ -9,6 +11,7 @@ import '../css/orders.css';
 function AddOrder() {
 
   let tooltip_volume_pair1 = document.querySelector("#tooltip_volume_pair1");
+  let tooltip_volume_pair2 = document.querySelector("#tooltip_volume_pair2");
 
   const match = useRouteMatch('/addorder/:pair');
   const [selectedPair, setSelectedPair] = useState([match.params.pair, "EUR"]);
@@ -17,6 +20,9 @@ function AddOrder() {
   const [balance, setBalance] = useState();
   const [totalAmount, setTotalAmount] = useState(0);
   const [price, setPrice] = useState(0);
+
+  const [visibleSpinner, setVisibleSpinner] = useState([])
+  const [spinnerWidth, setSpinnerWidth] = useState([])
 
   //const [selectedSecondPair, setSelectedSecondPair] = useState("EUR");
 
@@ -38,42 +44,40 @@ function AddOrder() {
   const [visibleListSecondPairs, setVisibleListSecondPairs] = useState("dropdown-menu small");
 
   useEffect(() => {
-    fetchPairs();
-    _fetchBalance().then(() => {
+    setVisibleSpinner("show");
+    setSpinnerWidth("width-15");
+    Promise.all([()=>{ setSpinnerWidth("width-50")}, fetchDataFromApi("assetPairs"),fetchDataFromApi("balance")]).then( (ris) =>{
+      _getBalance(ris[2]).then(r =>{}) ;
+      _getAssetPairs(ris[1]).then(r =>{
+        setSpinnerWidth("width-100")
+        setTimeout(() => {
+          setVisibleSpinner("hide");
+        }, 1000);
+      });
 
-    })
+    }).catch((e)=>{
+      alert(e);
+      setVisibleSpinner("hide");
+    });
+
   }, [])
 
 
-  const _fetchBalance = async () => {
-    // setVisibleSpinner("show");
-    // setSpinnerWidth("width-15");
-
-    const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
-
-    // setSpinnerWidth("width-50")
-
-    const data = await rawData.json();
+  const _getBalance = async (data) => {
 
     setBalance(data.result || undefined);
 
-    Object.entries(data.result).map(([key, value], i) => {
+    return Object.entries(data.result).map(([key, value], i) => {
       if (key === selectedPair[0]) {
         setTotalPair(value);
-        return;
       }
+      return value;
     });
-
-    // setSpinnerWidth("width-100")
-    setTimeout(() => {
-      // setVisibleSpinner("hide");
-    }, 1000)
   }
 
-  const fetchPairs = async () => {
-    //  const rawData = await fetch('http://127.0.0.1:5555/kraken/assetPairs');
-    //  const data = await rawData.json();
-    //  console.log(data);
+  const _getAssetPairs = async (data) => {
+
+     console.log(data);
     //  setSelectedPair(data)
   }
 
@@ -100,10 +104,12 @@ function AddOrder() {
     let val = "";
     Object.entries(balance).map(([key, value], i) => {
       if (key === selectedPair[0]) {
-        val = value;
+         val = value;
       }
-    })
+      return val;
+    });
     setVolumePair(val);
+
   }
 
   function _showOrder(type) {
@@ -124,7 +130,7 @@ function AddOrder() {
         setorderViewArray(["hide", "hide", "show"]);
 
         break;
-
+      default:
     }
   }
 
@@ -140,7 +146,7 @@ function AddOrder() {
 
     let value = e.target.value.replace(/[^\d.-]/g, '');
 
-    if (value != e.target.value) {
+    if (value !== e.target.value) {
       tooltip_volume_pair1.classList.remove('hide');
       tooltip_volume_pair1.classList.add('show');
 
@@ -155,13 +161,13 @@ function AddOrder() {
   function handlePrice(e) {
     let value = e.target.value.replace(/[^\d.-]/g, '');
 
-    if (value != e.target.value) {
-      tooltip_volume_pair1.classList.remove('hide');
-      tooltip_volume_pair1.classList.add('show');
+    if (value !== e.target.value) {
+      tooltip_volume_pair2.classList.remove('hide');
+      tooltip_volume_pair2.classList.add('show');
 
     } else {
-      tooltip_volume_pair1.classList.remove('show');
-      tooltip_volume_pair1.classList.add('hide');
+      tooltip_volume_pair2.classList.remove('show');
+      tooltip_volume_pair2.classList.add('hide');
     }
     setPrice(value);
     setTotalAmount(value * volumePair);
@@ -174,6 +180,8 @@ function AddOrder() {
   return (
     <div className="App">
       <h1>Add Order</h1>
+      <Spinner visibleSpinner={visibleSpinner} spinnerWidth={spinnerWidth}></Spinner>
+
       {selectedPair} {totalPair}
 
       <div className="tab-pane active" id="new-order">
@@ -182,17 +190,17 @@ function AddOrder() {
             <li className="margin-left-20" onClick={() => {
               _showOrder("order-simple");
             }}>
-              <a id="order-simple" className={navbarOrder[0]}>Simple </a>
+              <a id="order-simple" href ="!#" className={navbarOrder[0]}>Simple </a>
             </li>
             <li className="margin-left-20" onClick={() => {
               _showOrder("order-int");
             }}>
-              <a id="order-int" className={navbarOrder[1]}>Intermediate </a>
+              <a id="order-int" href ="!#" className={navbarOrder[1]}>Intermediate </a>
             </li>
             <li className="margin-left-20" onClick={() => {
               _showOrder("order-adv");
             }}>
-              <a id="order-adv" className={navbarOrder[2]}>Advanced </a>
+              <a id="order-adv"href ="!#"  className={navbarOrder[2]}>Advanced </a>
             </li>
           </ul>
         </div>
@@ -237,7 +245,7 @@ function AddOrder() {
                     <div className="dropdown" onClick={() => {
                       toggleVisibilitySecondPair()
                     }}>
-                      <a title="" className="btn add-on volume-currency-toggle dropdown-toggle tt"
+                      <a title="" className="btn add-on volume-currency-toggle dropdown-toggle tt" href ="!#"
                          data-toggle="dropdown"
                          data-original-title="Click to switch amount currency.">
                         {selectedPair[0]} <span className="caret"></span>
@@ -246,12 +254,12 @@ function AddOrder() {
                         <li onClick={() => {
                           setSelectedPair([selectedPair[0], selectedPair[1]])
                         }}>
-                          <a href="#">({selectedPair[0]})</a>
+                          <a href="!#">({selectedPair[0]})</a>
                         </li>
                         <li onClick={() => {
                           setSelectedPair([selectedPair[1], selectedPair[0]])
                         }}>
-                          <a href="#">({selectedPair[1]})</a>
+                          <a href="!#">({selectedPair[1]})</a>
                         </li>
                       </ul>
                     </div>
@@ -272,6 +280,8 @@ function AddOrder() {
                            onChange={handlePrice}
                            name="price" autoComplete="off" disabled={disableLimitPrice[0]}/><span
                     className="add-on pair hmarg20right">EUR</span>
+                    <div id="tooltip_volume_pair2" className="tooltip hide"> Only digit and "." for decimal</div>
+
                   </div>
                 </div>
                 <div className="ib ordertype-wrap">
@@ -351,1012 +361,1012 @@ function AddOrder() {
                         <div className="ib hmarg20left">
                           <input type="hidden" name="asset" value="XBTEUR"/>
                           <div className="dropdown">
-                            <a className="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a className="btn dropdown-toggle" data-toggle="dropdown" href="!#">
                               <span className="pairtext">XBT/EUR</span>
                               <span className="caret"></span>
                             </a>
                             <ul className="z-index-100000 dropdown-menu pair-selector" role="menu"
                                 aria-labelledby="dLabel">
                               <li className="dropdown-submenu" id="XBT">
-                                <a tabIndex="-1" href="#">XBT</a>
+                                <a tabIndex="-1" href="!#">XBT</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAXBT"
                                          data-pair-text="ADA/XBT">ADA/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOXBT"
                                          data-pair-text="ALGO/XBT">ALGO/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMXBT"
                                          data-pair-text="ATOM/XBT">ATOM/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATXBT"
                                          data-pair-text="BAT/XBT">BAT/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHXBT"
                                          data-pair-text="BCH/XBT">BCH/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPXBT"
                                          data-pair-text="COMP/XBT">COMP/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DASHXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DASHXBT"
                                          data-pair-text="DASH/XBT">DASH/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTXBT"
                                          data-pair-text="DOT/XBT">DOT/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSXBT"
                                          data-pair-text="EOS/XBT">EOS/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCXBT"
                                          data-pair-text="ETC/XBT">ETC/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHXBT"
                                          data-pair-text="ETH/XBT">ETH/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOXBT"
                                          data-pair-text="GNO/XBT">GNO/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXXBT"
                                          data-pair-text="ICX/XBT">ICX/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAXBT"
                                          data-pair-text="KAVA/XBT">KAVA/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCXBT"
                                          data-pair-text="KNC/XBT">KNC/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKXBT"
                                          data-pair-text="LINK/XBT">LINK/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKXBT"
                                          data-pair-text="LSK/XBT">LSK/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCXBT"
                                          data-pair-text="LTC/XBT">LTC/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNXBT"
                                          data-pair-text="MLN/XBT">MLN/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOXBT"
                                          data-pair-text="NANO/XBT">NANO/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGXBT"
                                          data-pair-text="OMG/XBT">OMG/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTXBT"
                                          data-pair-text="OXT/XBT">OXT/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGXBT"
                                          data-pair-text="PAXG/XBT">PAXG/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMXBT"
                                          data-pair-text="QTUM/XBT">QTUM/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPXBT"
                                          data-pair-text="REP/XBT">REP/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2XBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2XBT"
                                          data-pair-text="REPV2/XBT">REPV2/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCXBT"
                                          data-pair-text="SC/XBT">SC/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJXBT"
                                          data-pair-text="STORJ/XBT">STORJ/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXXBT"
                                          data-pair-text="TRX/XBT">TRX/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESXBT"
                                          data-pair-text="WAVES/XBT">WAVES/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTAUD"
                                          data-pair-text="XBT/AUD">XBT/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTCAD"
                                          data-pair-text="XBT/CAD">XBT/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTCHF"
                                          data-pair-text="XBT/CHF">XBT/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTDAI"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTDAI"
                                          data-pair-text="XBT/DAI">XBT/DAI</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTEUR"
                                          data-pair-text="XBT/EUR">XBT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTGBP"
                                          data-pair-text="XBT/GBP">XBT/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTJPY"
                                          data-pair-text="XBT/JPY">XBT/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTUSD"
                                          data-pair-text="XBT/USD">XBT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTUSDC"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTUSDC"
                                          data-pair-text="XBT/USDC">XBT/USDC</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTUSDT"
                                          data-pair-text="XBT/USDT">XBT/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XDGXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XDGXBT"
                                          data-pair-text="XDG/XBT">XDG/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XLMXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XLMXBT"
                                          data-pair-text="XLM/XBT">XLM/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XMRXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XMRXBT"
                                          data-pair-text="XMR/XBT">XMR/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPXBT"
                                          data-pair-text="XRP/XBT">XRP/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZXBT"
                                          data-pair-text="XTZ/XBT">XTZ/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ZECXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ZECXBT"
                                          data-pair-text="ZEC/XBT">ZEC/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ADA">
-                                <a tabIndex="-1" href="#">ADA</a>
+                                <a tabIndex="-1" href="!#">ADA</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAETH"
                                          data-pair-text="ADA/ETH">ADA/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAEUR"
                                          data-pair-text="ADA/EUR">ADA/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAUSD"
                                          data-pair-text="ADA/USD">ADA/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAXBT"
                                          data-pair-text="ADA/XBT">ADA/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ALGO">
-                                <a tabIndex="-1" href="#">ALGO</a>
+                                <a tabIndex="-1" href="!#">ALGO</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOETH"
                                          data-pair-text="ALGO/ETH">ALGO/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOEUR"
                                          data-pair-text="ALGO/EUR">ALGO/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOUSD"
                                          data-pair-text="ALGO/USD">ALGO/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOXBT"
                                          data-pair-text="ALGO/XBT">ALGO/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ATOM">
-                                <a tabIndex="-1" href="#">ATOM</a>
+                                <a tabIndex="-1" href="!#">ATOM</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMETH"
                                          data-pair-text="ATOM/ETH">ATOM/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMEUR"
                                          data-pair-text="ATOM/EUR">ATOM/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMUSD"
                                          data-pair-text="ATOM/USD">ATOM/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMXBT"
                                          data-pair-text="ATOM/XBT">ATOM/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="AUD">
-                                <a tabIndex="-1" href="#">AUD</a>
+                                <a tabIndex="-1" href="!#">AUD</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="AUDJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="AUDJPY"
                                          data-pair-text="AUD/JPY">AUD/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="AUDUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="AUDUSD"
                                          data-pair-text="AUD/USD">AUD/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHAUD"
                                          data-pair-text="BCH/AUD">BCH/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHAUD"
                                          data-pair-text="ETH/AUD">ETH/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURAUD"
                                          data-pair-text="EUR/AUD">EUR/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCAUD"
                                          data-pair-text="LTC/AUD">LTC/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTAUD"
                                          data-pair-text="USDT/AUD">USDT/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTAUD"
                                          data-pair-text="XBT/AUD">XBT/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPAUD"
                                          data-pair-text="XRP/AUD">XRP/AUD</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="BAT">
-                                <a tabIndex="-1" href="#">BAT</a>
+                                <a tabIndex="-1" href="!#">BAT</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATETH"
                                          data-pair-text="BAT/ETH">BAT/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATEUR"
                                          data-pair-text="BAT/EUR">BAT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATUSD"
                                          data-pair-text="BAT/USD">BAT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATXBT"
                                          data-pair-text="BAT/XBT">BAT/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="BCH">
-                                <a tabIndex="-1" href="#">BCH</a>
+                                <a tabIndex="-1" href="!#">BCH</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHAUD"
                                          data-pair-text="BCH/AUD">BCH/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHETH"
                                          data-pair-text="BCH/ETH">BCH/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHEUR"
                                          data-pair-text="BCH/EUR">BCH/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHGBP"
                                          data-pair-text="BCH/GBP">BCH/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHUSD"
                                          data-pair-text="BCH/USD">BCH/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHUSDT"
                                          data-pair-text="BCH/USDT">BCH/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHXBT"
                                          data-pair-text="BCH/XBT">BCH/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="CAD">
-                                <a tabIndex="-1" href="#">CAD</a>
+                                <a tabIndex="-1" href="!#">CAD</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHCAD"
                                          data-pair-text="ETH/CAD">ETH/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURCAD"
                                          data-pair-text="EUR/CAD">EUR/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCAD"
                                          data-pair-text="USD/CAD">USD/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTCAD"
                                          data-pair-text="USDT/CAD">USDT/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTCAD"
                                          data-pair-text="XBT/CAD">XBT/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPCAD"
                                          data-pair-text="XRP/CAD">XRP/CAD</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="CHF">
-                                <a tabIndex="-1" href="#">CHF</a>
+                                <a tabIndex="-1" href="!#">CHF</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHCHF"
                                          data-pair-text="ETH/CHF">ETH/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURCHF"
                                          data-pair-text="EUR/CHF">EUR/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCHF"
                                          data-pair-text="USD/CHF">USD/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTCHF"
                                          data-pair-text="USDT/CHF">USDT/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTCHF"
                                          data-pair-text="XBT/CHF">XBT/CHF</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="COMP">
-                                <a tabIndex="-1" href="#">COMP</a>
+                                <a tabIndex="-1" href="!#">COMP</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPETH"
                                          data-pair-text="COMP/ETH">COMP/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPEUR"
                                          data-pair-text="COMP/EUR">COMP/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPUSD"
                                          data-pair-text="COMP/USD">COMP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPXBT"
                                          data-pair-text="COMP/XBT">COMP/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="DAI">
-                                <a tabIndex="-1" href="#">DAI</a>
+                                <a tabIndex="-1" href="!#">DAI</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DAIEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DAIEUR"
                                          data-pair-text="DAI/EUR">DAI/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DAIUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DAIUSD"
                                          data-pair-text="DAI/USD">DAI/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DAIUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DAIUSDT"
                                          data-pair-text="DAI/USDT">DAI/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHDAI"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHDAI"
                                          data-pair-text="ETH/DAI">ETH/DAI</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTDAI"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTDAI"
                                          data-pair-text="XBT/DAI">XBT/DAI</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="DASH">
-                                <a tabIndex="-1" href="#">DASH</a>
+                                <a tabIndex="-1" href="!#">DASH</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DASHEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DASHEUR"
                                          data-pair-text="DASH/EUR">DASH/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DASHUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DASHUSD"
                                          data-pair-text="DASH/USD">DASH/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DASHXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DASHXBT"
                                          data-pair-text="DASH/XBT">DASH/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="DOT">
-                                <a tabIndex="-1" href="#">DOT</a>
+                                <a tabIndex="-1" href="!#">DOT</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTETH"
                                          data-pair-text="DOT/ETH">DOT/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTEUR"
                                          data-pair-text="DOT/EUR">DOT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTUSD"
                                          data-pair-text="DOT/USD">DOT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTXBT"
                                          data-pair-text="DOT/XBT">DOT/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="EOS">
-                                <a tabIndex="-1" href="#">EOS</a>
+                                <a tabIndex="-1" href="!#">EOS</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSETH"
                                          data-pair-text="EOS/ETH">EOS/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSEUR"
                                          data-pair-text="EOS/EUR">EOS/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSUSD"
                                          data-pair-text="EOS/USD">EOS/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSXBT"
                                          data-pair-text="EOS/XBT">EOS/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ETC">
-                                <a tabIndex="-1" href="#">ETC</a>
+                                <a tabIndex="-1" href="!#">ETC</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCETH"
                                          data-pair-text="ETC/ETH">ETC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCEUR"
                                          data-pair-text="ETC/EUR">ETC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCUSD"
                                          data-pair-text="ETC/USD">ETC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCXBT"
                                          data-pair-text="ETC/XBT">ETC/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ETH">
-                                <a tabIndex="-1" href="#">ETH</a>
+                                <a tabIndex="-1" href="!#">ETH</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAETH"
                                          data-pair-text="ADA/ETH">ADA/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOETH"
                                          data-pair-text="ALGO/ETH">ALGO/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMETH"
                                          data-pair-text="ATOM/ETH">ATOM/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATETH"
                                          data-pair-text="BAT/ETH">BAT/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHETH"
                                          data-pair-text="BCH/ETH">BCH/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPETH"
                                          data-pair-text="COMP/ETH">COMP/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTETH"
                                          data-pair-text="DOT/ETH">DOT/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSETH"
                                          data-pair-text="EOS/ETH">EOS/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCETH"
                                          data-pair-text="ETC/ETH">ETC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHAUD"
                                          data-pair-text="ETH/AUD">ETH/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHCAD"
                                          data-pair-text="ETH/CAD">ETH/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHCHF"
                                          data-pair-text="ETH/CHF">ETH/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHDAI"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHDAI"
                                          data-pair-text="ETH/DAI">ETH/DAI</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHEUR"
                                          data-pair-text="ETH/EUR">ETH/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHGBP"
                                          data-pair-text="ETH/GBP">ETH/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHJPY"
                                          data-pair-text="ETH/JPY">ETH/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHUSD"
                                          data-pair-text="ETH/USD">ETH/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHUSDC"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHUSDC"
                                          data-pair-text="ETH/USDC">ETH/USDC</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHUSDT"
                                          data-pair-text="ETH/USDT">ETH/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHXBT"
                                          data-pair-text="ETH/XBT">ETH/XBT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOETH"
                                          data-pair-text="GNO/ETH">GNO/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXETH"
                                          data-pair-text="ICX/ETH">ICX/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAETH"
                                          data-pair-text="KAVA/ETH">KAVA/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCETH"
                                          data-pair-text="KNC/ETH">KNC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKETH"
                                          data-pair-text="LINK/ETH">LINK/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKETH"
                                          data-pair-text="LSK/ETH">LSK/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCETH"
                                          data-pair-text="LTC/ETH">LTC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNETH"
                                          data-pair-text="MLN/ETH">MLN/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOETH"
                                          data-pair-text="NANO/ETH">NANO/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGETH"
                                          data-pair-text="OMG/ETH">OMG/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTETH"
                                          data-pair-text="OXT/ETH">OXT/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGETH"
                                          data-pair-text="PAXG/ETH">PAXG/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMETH"
                                          data-pair-text="QTUM/ETH">QTUM/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPETH"
                                          data-pair-text="REP/ETH">REP/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2ETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2ETH"
                                          data-pair-text="REPV2/ETH">REPV2/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCETH"
                                          data-pair-text="SC/ETH">SC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJETH"
                                          data-pair-text="STORJ/ETH">STORJ/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXETH"
                                          data-pair-text="TRX/ETH">TRX/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESETH"
                                          data-pair-text="WAVES/ETH">WAVES/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPETH"
                                          data-pair-text="XRP/ETH">XRP/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZETH"
                                          data-pair-text="XTZ/ETH">XTZ/ETH</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="EUR">
-                                <a tabIndex="-1" href="#">EUR</a>
+                                <a tabIndex="-1" href="!#">EUR</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAEUR"
                                          data-pair-text="ADA/EUR">ADA/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOEUR"
                                          data-pair-text="ALGO/EUR">ALGO/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMEUR"
                                          data-pair-text="ATOM/EUR">ATOM/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATEUR"
                                          data-pair-text="BAT/EUR">BAT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHEUR"
                                          data-pair-text="BCH/EUR">BCH/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPEUR"
                                          data-pair-text="COMP/EUR">COMP/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DAIEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DAIEUR"
                                          data-pair-text="DAI/EUR">DAI/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DASHEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DASHEUR"
                                          data-pair-text="DASH/EUR">DASH/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTEUR"
                                          data-pair-text="DOT/EUR">DOT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSEUR"
                                          data-pair-text="EOS/EUR">EOS/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCEUR"
                                          data-pair-text="ETC/EUR">ETC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHEUR"
                                          data-pair-text="ETH/EUR">ETH/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURAUD"
                                          data-pair-text="EUR/AUD">EUR/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURCAD"
                                          data-pair-text="EUR/CAD">EUR/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURCHF"
                                          data-pair-text="EUR/CHF">EUR/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURGBP"
                                          data-pair-text="EUR/GBP">EUR/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURJPY"
                                          data-pair-text="EUR/JPY">EUR/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURUSD"
                                          data-pair-text="EUR/USD">EUR/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOEUR"
                                          data-pair-text="GNO/EUR">GNO/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXEUR"
                                          data-pair-text="ICX/EUR">ICX/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAEUR"
                                          data-pair-text="KAVA/EUR">KAVA/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCEUR"
                                          data-pair-text="KNC/EUR">KNC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKEUR"
                                          data-pair-text="LINK/EUR">LINK/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKEUR"
                                          data-pair-text="LSK/EUR">LSK/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCEUR"
                                          data-pair-text="LTC/EUR">LTC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNEUR"
                                          data-pair-text="MLN/EUR">MLN/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOEUR"
                                          data-pair-text="NANO/EUR">NANO/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGEUR"
                                          data-pair-text="OMG/EUR">OMG/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTEUR"
                                          data-pair-text="OXT/EUR">OXT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGEUR"
                                          data-pair-text="PAXG/EUR">PAXG/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMEUR"
                                          data-pair-text="QTUM/EUR">QTUM/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPEUR"
                                          data-pair-text="REP/EUR">REP/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2EUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2EUR"
                                          data-pair-text="REPV2/EUR">REPV2/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCEUR"
                                          data-pair-text="SC/EUR">SC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJEUR"
                                          data-pair-text="STORJ/EUR">STORJ/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXEUR"
                                          data-pair-text="TRX/EUR">TRX/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCEUR"
                                          data-pair-text="USDC/EUR">USDC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTEUR"
                                          data-pair-text="USDT/EUR">USDT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESEUR"
                                          data-pair-text="WAVES/EUR">WAVES/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTEUR"
                                          data-pair-text="XBT/EUR">XBT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XDGEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XDGEUR"
                                          data-pair-text="XDG/EUR">XDG/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XLMEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XLMEUR"
                                          data-pair-text="XLM/EUR">XLM/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XMREUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XMREUR"
                                          data-pair-text="XMR/EUR">XMR/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPEUR"
                                          data-pair-text="XRP/EUR">XRP/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZEUR"
                                          data-pair-text="XTZ/EUR">XTZ/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ZECEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ZECEUR"
                                          data-pair-text="ZEC/EUR">ZEC/EUR</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="GBP">
-                                <a tabIndex="-1" href="#">GBP</a>
+                                <a tabIndex="-1" href="!#">GBP</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHGBP"
                                          data-pair-text="BCH/GBP">BCH/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHGBP"
                                          data-pair-text="ETH/GBP">ETH/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURGBP"
                                          data-pair-text="EUR/GBP">EUR/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GBPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GBPUSD"
                                          data-pair-text="GBP/USD">GBP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCGBP"
                                          data-pair-text="LTC/GBP">LTC/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTGBP"
                                          data-pair-text="USDT/GBP">USDT/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTGBP"
                                          data-pair-text="XBT/GBP">XBT/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPGBP"
                                          data-pair-text="XRP/GBP">XRP/GBP</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="GNO">
-                                <a tabIndex="-1" href="#">GNO</a>
+                                <a tabIndex="-1" href="!#">GNO</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOETH"
                                          data-pair-text="GNO/ETH">GNO/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOEUR"
                                          data-pair-text="GNO/EUR">GNO/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOUSD"
                                          data-pair-text="GNO/USD">GNO/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOXBT"
                                          data-pair-text="GNO/XBT">GNO/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ICX">
-                                <a tabIndex="-1" href="#">ICX</a>
+                                <a tabIndex="-1" href="!#">ICX</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXETH"
                                          data-pair-text="ICX/ETH">ICX/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXEUR"
                                          data-pair-text="ICX/EUR">ICX/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXUSD"
                                          data-pair-text="ICX/USD">ICX/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXXBT"
                                          data-pair-text="ICX/XBT">ICX/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="JPY">
-                                <a tabIndex="-1" href="#">JPY</a>
+                                <a tabIndex="-1" href="!#">JPY</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="AUDJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="AUDJPY"
                                          data-pair-text="AUD/JPY">AUD/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHJPY"
                                          data-pair-text="ETH/JPY">ETH/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURJPY"
                                          data-pair-text="EUR/JPY">EUR/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDJPY"
                                          data-pair-text="USD/JPY">USD/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTJPY"
                                          data-pair-text="USDT/JPY">USDT/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTJPY"
                                          data-pair-text="XBT/JPY">XBT/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPJPY"
                                          data-pair-text="XRP/JPY">XRP/JPY</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="KAVA">
-                                <a tabIndex="-1" href="#">KAVA</a>
+                                <a tabIndex="-1" href="!#">KAVA</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAETH"
                                          data-pair-text="KAVA/ETH">KAVA/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAEUR"
                                          data-pair-text="KAVA/EUR">KAVA/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAUSD"
                                          data-pair-text="KAVA/USD">KAVA/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAXBT"
                                          data-pair-text="KAVA/XBT">KAVA/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="KNC">
-                                <a tabIndex="-1" href="#">KNC</a>
+                                <a tabIndex="-1" href="!#">KNC</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCETH"
                                          data-pair-text="KNC/ETH">KNC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCEUR"
                                          data-pair-text="KNC/EUR">KNC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCUSD"
                                          data-pair-text="KNC/USD">KNC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCXBT"
                                          data-pair-text="KNC/XBT">KNC/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="LINK">
-                                <a tabIndex="-1" href="#">LINK</a>
+                                <a tabIndex="-1" href="!#">LINK</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKETH"
                                          data-pair-text="LINK/ETH">LINK/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKEUR"
                                          data-pair-text="LINK/EUR">LINK/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKUSD"
                                          data-pair-text="LINK/USD">LINK/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKXBT"
                                          data-pair-text="LINK/XBT">LINK/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="LSK">
-                                <a tabIndex="-1" href="#">LSK</a>
+                                <a tabIndex="-1" href="!#">LSK</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKETH"
                                          data-pair-text="LSK/ETH">LSK/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKEUR"
                                          data-pair-text="LSK/EUR">LSK/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKUSD"
                                          data-pair-text="LSK/USD">LSK/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKXBT"
                                          data-pair-text="LSK/XBT">LSK/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="LTC">
-                                <a tabIndex="-1" href="#">LTC</a>
+                                <a tabIndex="-1" href="!#">LTC</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCAUD"
                                          data-pair-text="LTC/AUD">LTC/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCETH"
                                          data-pair-text="LTC/ETH">LTC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCEUR"
                                          data-pair-text="LTC/EUR">LTC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCGBP"
                                          data-pair-text="LTC/GBP">LTC/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCUSD"
                                          data-pair-text="LTC/USD">LTC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCUSDT"
                                          data-pair-text="LTC/USDT">LTC/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCXBT"
                                          data-pair-text="LTC/XBT">LTC/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="MLN">
-                                <a tabIndex="-1" href="#">MLN</a>
+                                <a tabIndex="-1" href="!#">MLN</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNETH"
                                          data-pair-text="MLN/ETH">MLN/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNEUR"
                                          data-pair-text="MLN/EUR">MLN/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNUSD"
                                          data-pair-text="MLN/USD">MLN/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNXBT"
                                          data-pair-text="MLN/XBT">MLN/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="NANO">
-                                <a tabIndex="-1" href="#">NANO</a>
+                                <a tabIndex="-1" href="!#">NANO</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOETH"
                                          data-pair-text="NANO/ETH">NANO/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOEUR"
                                          data-pair-text="NANO/EUR">NANO/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOUSD"
                                          data-pair-text="NANO/USD">NANO/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOXBT"
                                          data-pair-text="NANO/XBT">NANO/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="OMG">
-                                <a tabIndex="-1" href="#">OMG</a>
+                                <a tabIndex="-1" href="!#">OMG</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGETH"
                                          data-pair-text="OMG/ETH">OMG/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGEUR"
                                          data-pair-text="OMG/EUR">OMG/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGUSD"
                                          data-pair-text="OMG/USD">OMG/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGXBT"
                                          data-pair-text="OMG/XBT">OMG/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="OXT">
-                                <a tabIndex="-1" href="#">OXT</a>
+                                <a tabIndex="-1" href="!#">OXT</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTETH"
                                          data-pair-text="OXT/ETH">OXT/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTEUR"
                                          data-pair-text="OXT/EUR">OXT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTUSD"
                                          data-pair-text="OXT/USD">OXT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTXBT"
                                          data-pair-text="OXT/XBT">OXT/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="PAXG">
-                                <a tabIndex="-1" href="#">PAXG</a>
+                                <a tabIndex="-1" href="!#">PAXG</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGETH"
                                          data-pair-text="PAXG/ETH">PAXG/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGEUR"
                                          data-pair-text="PAXG/EUR">PAXG/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGUSD"
                                          data-pair-text="PAXG/USD">PAXG/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGXBT"
                                          data-pair-text="PAXG/XBT">PAXG/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="QTUM">
-                                <a tabIndex="-1" href="#">QTUM</a>
+                                <a tabIndex="-1" href="!#">QTUM</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMETH"
                                          data-pair-text="QTUM/ETH">QTUM/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMEUR"
                                          data-pair-text="QTUM/EUR">QTUM/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMUSD"
                                          data-pair-text="QTUM/USD">QTUM/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMXBT"
                                          data-pair-text="QTUM/XBT">QTUM/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="REP">
-                                <a tabIndex="-1" href="#">REP</a>
+                                <a tabIndex="-1" href="!#">REP</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPETH"
                                          data-pair-text="REP/ETH">REP/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPEUR"
                                          data-pair-text="REP/EUR">REP/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPUSD"
                                          data-pair-text="REP/USD">REP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPXBT"
                                          data-pair-text="REP/XBT">REP/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="REPV2">
-                                <a tabIndex="-1" href="#">REPV2</a>
+                                <a tabIndex="-1" href="!#">REPV2</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2ETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2ETH"
                                          data-pair-text="REPV2/ETH">REPV2/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2EUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2EUR"
                                          data-pair-text="REPV2/EUR">REPV2/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2USD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2USD"
                                          data-pair-text="REPV2/USD">REPV2/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2XBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2XBT"
                                          data-pair-text="REPV2/XBT">REPV2/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="SC">
-                                <a tabIndex="-1" href="#">SC</a>
+                                <a tabIndex="-1" href="!#">SC</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCETH"
                                          data-pair-text="SC/ETH">SC/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCEUR"
                                          data-pair-text="SC/EUR">SC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCUSD"
                                          data-pair-text="SC/USD">SC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCXBT"
                                          data-pair-text="SC/XBT">SC/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="STORJ">
-                                <a tabIndex="-1" href="#">STORJ</a>
+                                <a tabIndex="-1" href="!#">STORJ</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJETH"
                                          data-pair-text="STORJ/ETH">STORJ/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJEUR"
                                          data-pair-text="STORJ/EUR">STORJ/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJUSD"
                                          data-pair-text="STORJ/USD">STORJ/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJXBT"
                                          data-pair-text="STORJ/XBT">STORJ/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="TRX">
-                                <a tabIndex="-1" href="#">TRX</a>
+                                <a tabIndex="-1" href="!#">TRX</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXETH"
                                          data-pair-text="TRX/ETH">TRX/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXEUR"
                                          data-pair-text="TRX/EUR">TRX/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXUSD"
                                          data-pair-text="TRX/USD">TRX/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXXBT"
                                          data-pair-text="TRX/XBT">TRX/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="USD">
-                                <a tabIndex="-1" href="#">USD</a>
+                                <a tabIndex="-1" href="!#">USD</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ADAUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ADAUSD"
                                          data-pair-text="ADA/USD">ADA/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ALGOUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ALGOUSD"
                                          data-pair-text="ALGO/USD">ALGO/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ATOMUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ATOMUSD"
                                          data-pair-text="ATOM/USD">ATOM/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="AUDUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="AUDUSD"
                                          data-pair-text="AUD/USD">AUD/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BATUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BATUSD"
                                          data-pair-text="BAT/USD">BAT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHUSD"
                                          data-pair-text="BCH/USD">BCH/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="COMPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="COMPUSD"
                                          data-pair-text="COMP/USD">COMP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DAIUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DAIUSD"
                                          data-pair-text="DAI/USD">DAI/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DASHUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DASHUSD"
                                          data-pair-text="DASH/USD">DASH/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DOTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DOTUSD"
                                          data-pair-text="DOT/USD">DOT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EOSUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EOSUSD"
                                          data-pair-text="EOS/USD">EOS/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETCUSD"
                                          data-pair-text="ETC/USD">ETC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHUSD"
                                          data-pair-text="ETH/USD">ETH/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="EURUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="EURUSD"
                                          data-pair-text="EUR/USD">EUR/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GBPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GBPUSD"
                                          data-pair-text="GBP/USD">GBP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="GNOUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="GNOUSD"
                                          data-pair-text="GNO/USD">GNO/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ICXUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ICXUSD"
                                          data-pair-text="ICX/USD">ICX/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KAVAUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KAVAUSD"
                                          data-pair-text="KAVA/USD">KAVA/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="KNCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="KNCUSD"
                                          data-pair-text="KNC/USD">KNC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LINKUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LINKUSD"
                                          data-pair-text="LINK/USD">LINK/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LSKUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LSKUSD"
                                          data-pair-text="LSK/USD">LSK/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCUSD"
                                          data-pair-text="LTC/USD">LTC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="MLNUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="MLNUSD"
                                          data-pair-text="MLN/USD">MLN/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="NANOUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="NANOUSD"
                                          data-pair-text="NANO/USD">NANO/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OMGUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OMGUSD"
                                          data-pair-text="OMG/USD">OMG/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="OXTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="OXTUSD"
                                          data-pair-text="OXT/USD">OXT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="PAXGUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="PAXGUSD"
                                          data-pair-text="PAXG/USD">PAXG/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="QTUMUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="QTUMUSD"
                                          data-pair-text="QTUM/USD">QTUM/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPUSD"
                                          data-pair-text="REP/USD">REP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="REPV2USD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="REPV2USD"
                                          data-pair-text="REPV2/USD">REPV2/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="SCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="SCUSD"
                                          data-pair-text="SC/USD">SC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="STORJUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="STORJUSD"
                                          data-pair-text="STORJ/USD">STORJ/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="TRXUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="TRXUSD"
                                          data-pair-text="TRX/USD">TRX/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCAD"
                                          data-pair-text="USD/CAD">USD/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCHF"
                                          data-pair-text="USD/CHF">USD/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDJPY"
                                          data-pair-text="USD/JPY">USD/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCUSD"
                                          data-pair-text="USDC/USD">USDC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTUSD"
                                          data-pair-text="USDT/USD">USDT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESUSD"
                                          data-pair-text="WAVES/USD">WAVES/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTUSD"
                                          data-pair-text="XBT/USD">XBT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XDGUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XDGUSD"
                                          data-pair-text="XDG/USD">XDG/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XLMUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XLMUSD"
                                          data-pair-text="XLM/USD">XLM/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XMRUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XMRUSD"
                                          data-pair-text="XMR/USD">XMR/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPUSD"
                                          data-pair-text="XRP/USD">XRP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZUSD"
                                          data-pair-text="XTZ/USD">XTZ/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ZECUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ZECUSD"
                                          data-pair-text="ZEC/USD">ZEC/USD</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="USDC">
-                                <a tabIndex="-1" href="#">USDC</a>
+                                <a tabIndex="-1" href="!#">USDC</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHUSDC"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHUSDC"
                                          data-pair-text="ETH/USDC">ETH/USDC</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCEUR"
                                          data-pair-text="USDC/EUR">USDC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCUSD"
                                          data-pair-text="USDC/USD">USDC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCUSDT"
                                          data-pair-text="USDC/USDT">USDC/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTUSDC"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTUSDC"
                                          data-pair-text="XBT/USDC">XBT/USDC</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="USDT">
-                                <a tabIndex="-1" href="#">USDT</a>
+                                <a tabIndex="-1" href="!#">USDT</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="BCHUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="BCHUSDT"
                                          data-pair-text="BCH/USDT">BCH/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="DAIUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="DAIUSDT"
                                          data-pair-text="DAI/USDT">DAI/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ETHUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ETHUSDT"
                                          data-pair-text="ETH/USDT">ETH/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="LTCUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="LTCUSDT"
                                          data-pair-text="LTC/USDT">LTC/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDCUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDCUSDT"
                                          data-pair-text="USDC/USDT">USDC/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTAUD"
                                          data-pair-text="USDT/AUD">USDT/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTCAD"
                                          data-pair-text="USDT/CAD">USDT/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTCHF"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTCHF"
                                          data-pair-text="USDT/CHF">USDT/CHF</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTEUR"
                                          data-pair-text="USDT/EUR">USDT/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTGBP"
                                          data-pair-text="USDT/GBP">USDT/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTJPY"
                                          data-pair-text="USDT/JPY">USDT/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="USDTUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="USDTUSD"
                                          data-pair-text="USDT/USD">USDT/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XBTUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XBTUSDT"
                                          data-pair-text="XBT/USDT">XBT/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPUSDT"
                                          data-pair-text="XRP/USDT">XRP/USDT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="WAVES">
-                                <a tabIndex="-1" href="#">WAVES</a>
+                                <a tabIndex="-1" href="!#">WAVES</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESETH"
                                          data-pair-text="WAVES/ETH">WAVES/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESEUR"
                                          data-pair-text="WAVES/EUR">WAVES/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESUSD"
                                          data-pair-text="WAVES/USD">WAVES/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="WAVESXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="WAVESXBT"
                                          data-pair-text="WAVES/XBT">WAVES/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="XDG">
-                                <a tabIndex="-1" href="#">XDG</a>
+                                <a tabIndex="-1" href="!#">XDG</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XDGEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XDGEUR"
                                          data-pair-text="XDG/EUR">XDG/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XDGUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XDGUSD"
                                          data-pair-text="XDG/USD">XDG/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XDGXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XDGXBT"
                                          data-pair-text="XDG/XBT">XDG/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="XLM">
-                                <a tabIndex="-1" href="#">XLM</a>
+                                <a tabIndex="-1" href="!#">XLM</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XLMEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XLMEUR"
                                          data-pair-text="XLM/EUR">XLM/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XLMUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XLMUSD"
                                          data-pair-text="XLM/USD">XLM/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XLMXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XLMXBT"
                                          data-pair-text="XLM/XBT">XLM/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="XMR">
-                                <a tabIndex="-1" href="#">XMR</a>
+                                <a tabIndex="-1" href="!#">XMR</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XMREUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XMREUR"
                                          data-pair-text="XMR/EUR">XMR/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XMRUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XMRUSD"
                                          data-pair-text="XMR/USD">XMR/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XMRXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XMRXBT"
                                          data-pair-text="XMR/XBT">XMR/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="XRP">
-                                <a tabIndex="-1" href="#">XRP</a>
+                                <a tabIndex="-1" href="!#">XRP</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPAUD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPAUD"
                                          data-pair-text="XRP/AUD">XRP/AUD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPCAD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPCAD"
                                          data-pair-text="XRP/CAD">XRP/CAD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPETH"
                                          data-pair-text="XRP/ETH">XRP/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPEUR"
                                          data-pair-text="XRP/EUR">XRP/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPGBP"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPGBP"
                                          data-pair-text="XRP/GBP">XRP/GBP</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPJPY"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPJPY"
                                          data-pair-text="XRP/JPY">XRP/JPY</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPUSD"
                                          data-pair-text="XRP/USD">XRP/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPUSDT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPUSDT"
                                          data-pair-text="XRP/USDT">XRP/USDT</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XRPXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XRPXBT"
                                          data-pair-text="XRP/XBT">XRP/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="XTZ">
-                                <a tabIndex="-1" href="#">XTZ</a>
+                                <a tabIndex="-1" href="!#">XTZ</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZETH"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZETH"
                                          data-pair-text="XTZ/ETH">XTZ/ETH</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZEUR"
                                          data-pair-text="XTZ/EUR">XTZ/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZUSD"
                                          data-pair-text="XTZ/USD">XTZ/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="XTZXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="XTZXBT"
                                          data-pair-text="XTZ/XBT">XTZ/XBT</a></li>
                                 </ul>
                               </li>
                               <li className="dropdown-submenu" id="ZEC">
-                                <a tabIndex="-1" href="#">ZEC</a>
+                                <a tabIndex="-1" href="!#">ZEC</a>
                                 <ul className="dropdown-menu pairlist">
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ZECEUR"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ZECEUR"
                                          data-pair-text="ZEC/EUR">ZEC/EUR</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ZECUSD"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ZECUSD"
                                          data-pair-text="ZEC/USD">ZEC/USD</a></li>
-                                  <li><a className="currpairs" tabIndex="-1" href="#" data-pair="ZECXBT"
+                                  <li><a className="currpairs" tabIndex="-1" href="!#" data-pair="ZECXBT"
                                          data-pair-text="ZEC/XBT">ZEC/XBT</a></li>
                                 </ul>
                               </li>
@@ -1374,17 +1384,17 @@ function AddOrder() {
                                  name="volume"/>
                           <div className="ib posrel">
                             <div className="dropdown">
-                              <a title="" data-value="XXBT"
+                              <a title="" data-value="XXBT" href="!#"
                                  className="btn add-on volume-currency-toggle rounded dropdown-toggle tt"
                                  data-toggle="dropdown"
                                  data-original-title="Click to switch amount currency.">XBT <span
                                 className="caret"></span></a>
                               <ul className="dropdown-menu small">
                                 <li data-value="XXBT" data-display="XBT" className="disabled">
-                                  <a href="#">Bitcoin (XBT)</a>
+                                  <a href="!#">Bitcoin (XBT)</a>
                                 </li>
                                 <li data-value="ZEUR" data-display="EUR">
-                                  <a href="#">Euro (EUR)</a>
+                                  <a href="!#">Euro (EUR)</a>
                                 </li>
                               </ul>
                             </div>
@@ -1547,7 +1557,7 @@ function AddOrder() {
                                      className="timepicker-default input-smaller hmarg0right" type="text"/><span
                               className="add-on"><i className="icon-time"></i> </span>
                             </div>
-                            <a className="hpad10left smaller startreset">Reset</a>
+                            <a className="hpad10left smaller startreset" href="!#">Reset</a>
                           </div>
                           <p className="control-hint">When this order should be placed on the market.</p>
                         </div>
@@ -1576,7 +1586,7 @@ function AddOrder() {
                               /><span
                               className="add-on"><i className="icon-time"></i> </span>
                             </div>
-                            <a className="hpad10left smaller expirereset">Reset</a>
+                            <a className="hpad10left smaller expirereset" href="!#">Reset</a>
                           </div>
                           <p className="control-hint">When this order should be canceled (if not filled).</p>
                         </div>

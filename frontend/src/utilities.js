@@ -32,12 +32,16 @@ export const getFiatChar = function (pair) {
     case "AUS":
       ris = "AUD";
       break;
+    default:
   }
   return ris;
 }
 
-export const fetchDataFromApi = function () {
+export const fetchDataFromApi = async function (param) {
 
+    const rawData = await fetch('http://127.0.0.1:5555/kraken/'+param);
+
+    return  await rawData.json();
 
 }
 

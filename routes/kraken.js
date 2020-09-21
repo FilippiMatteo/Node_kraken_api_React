@@ -83,7 +83,7 @@ router.get('/openPositions', function (req, res, next) {
     // Display user's balance
     var response = (await kraken.api('OpenPositions'));
     console.dir(response);
-    res.send(response)
+    res.json(response)
 
   })();
 
