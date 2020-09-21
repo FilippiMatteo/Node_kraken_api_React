@@ -15,8 +15,8 @@ function Navbar() {
 
   function _undelinePath() {
 
-    let path = window.location.pathname.substring(0);
-    path = path.substring(0,path.indexOf("/"));
+    let path = window.location.pathname.substring(1);
+    path = path.substring(0,path.indexOf("/") > -1 ? path.indexOf("/"): path.length);
 
     let index;
     let array = ["", "", "", "", "", "", ""];
@@ -36,7 +36,6 @@ function Navbar() {
       case 'openOrders':
         index=5;
         break
-
       default :
         index = 0;
     }
