@@ -45,6 +45,25 @@ export const fetchDataFromApi = async function (param) {
 
 }
 
+export const findObj = function (obj,p) {
+  let val;
+  Object.entries(obj).map(([key, value], i) => {
+    if (key === p) {
+      val = value;
+    }
+    return val
+  });
+  return val;
+}
+
+export const groupBy = key => array =>
+  array.reduce((objectsByKeyValue, obj) => {
+    const value = obj[key];
+    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+    return objectsByKeyValue;
+  }, {});
+
+
 export const zeroResult = function () {
 
 }
