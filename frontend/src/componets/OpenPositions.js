@@ -12,7 +12,7 @@ function OpenPositions() {
   const [visibleSpinner, setVisibleSpinner] = useState([])
   const [spinnerWidth, setSpinnerWidth] = useState([])
    const [visibleTable, seVisibleTable] = useState(["hide"])
-   const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time", isSortable: true},{tablename:"Type",value :"type", isSortable: true }, {tablename:"Order", value :"ordertype", isSortable: true},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Vol Closed", value: "vol_closed"},{tablename: "Cost", value: "cost" } ,{tablename: "Fee", value: "fee"},{tablename: "Terms",value: "terms"},{tablename: "Status",value: "posstatus"}, {tablename: "", value: "X"}]
+   const tableHeader = [{tablename:"Pairs", value: "pair" },{tablename: "Date", value : "time", isSortable: true},{tablename:"Type",value :"type", isSortable: true }, {tablename:"Order", value :"ordertype", isSortable: true},{ tablename :"Price", value: "price"}, { tablename :"Volume", value: "vol"},{tablename: "Vol Closed", value: "vol_closed"},{tablename: "Cost", value: "cost" } ,{tablename: "Fee", value: "fee"},{tablename: "Terms",value: "terms"},{tablename: "Status",value: "posstatus"},{tablename: "Rollovertm",value: "rollovertm"}, {tablename: "", value: "X"}]
 
   const _fetchOpenPositions = async () => {
     setVisibleSpinner("show");
@@ -112,10 +112,12 @@ function OpenPositions() {
 
   function _renderlistTrades(objects) {
     return Object.entries(objects).map(([key, value], i) => {
-      let pair1 = value.pair.substring(1, 4)
-      let pair2 = value.pair.substring(5, 9)
-      let date = new Date(value.time * 1000)
+      let pair1 = value.pair.substring(1, 4);
+      let pair2 = value.pair.substring(5, 9);
+      let date = new Date(value.time * 1000);
       let dateString = date.toLocaleDateString("it-It");
+      let rolloverDate = new Date(value.rollovertm * 1000);
+      let rollovertmString = rolloverDate.toLocaleDateString("it-It");
       // console.log(key)
       return (
 
@@ -131,6 +133,7 @@ function OpenPositions() {
           <td>{value.fee}</td>
           <td>{value.terms}</td>
           <td>{value.posstatus}</td>
+          <td>{rollovertmString} {rolloverDate.getHours()}:{rolloverDate.getMinutes()}:{rolloverDate.getSeconds()} </td>
           <td ><button className="btn btn-danger thin tt btn-cancel" onClick={()=>{canceldOrder(key)}}>X</button></td>
 
 
