@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import '../App.css';
 import Spinner from "../componets/Spinner";
-import {isFiat,getFiatChar} from "../utilities";
+import {isFiat, getFiatChar, fetchDataFromApi} from "../utilities";
 
 
 function OpenOrders() {
   useEffect(() => {
-    _fetchOpenOrder();
+    getOpenOrder();
   }, [])
 
   const [orders, setOrders] = useState({})
@@ -27,69 +27,36 @@ function OpenOrders() {
     isSortable: true
   }, {tablename: "Cost", value: "cost", isSortable: true}, {tablename: "", value: "X"}]
 
-  const _fetchOpenOrder = async () => {
-    try {
-      setVisibleSpinner("show");
-      setSpinnerWidth("width-15");
 
-      const rawData = await fetch('http://127.0.0.1:5555/kraken/openOrders').catch( (e) => {
-        console.error(e)
-      });
 
-      setSpinnerWidth("width-50")
-
-      const data = await rawData.json();
-
-      setOrders(data.result.open || [])
+  const getOpenOrder = async () =>{
+    setVisibleSpinner("show");
+    setSpinnerWidth("width-15");
+    fetchDataFromApi("openOrders").then((ris) => {
+      setSpinnerWidth("width-50");
+      setOrders(ris.result.open || [])
       setSpinnerWidth("width-100")
       seVisibleTable("show");
 
       setTimeout(() => {
         setVisibleSpinner("hide");
+        setSpinnerWidth("width-15");
       }, 1000)
-    }catch (e) {
-      console.error("errore chiamata",e);
-      setSpinnerWidth("width-100")
-      setVisibleSpinner("hide");
-
-    }
-
+    }).catch((e) => {
+      alert(e)
+    });
   }
 
   const canceldOrder = async (key) => {
-    try {
-      setVisibleSpinner("show");
-      setSpinnerWidth("width-15");
 
-      const rawData = await fetch('http://127.0.0.1:5555/kraken/cancelOrder',{ method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'txid': key})
-        }).catch( (e) => {
-        console.error(e)
-      });
+    fetchDataFromApi("cancelOrder",{'txid': key},"POST").then((ris) => {
+        alert("Deleted");
+        console.log(ris);
+        getOpenOrder();
+    }).catch((e) => {
+      alert(e)
+    });
 
-      setSpinnerWidth("width-50")
-
-      const data = await rawData.json();
-
-      setOrders(data.result.open || [])
-      setSpinnerWidth("width-100")
-      seVisibleTable("show");
-
-      setTimeout(() => {
-        setVisibleSpinner("hide");
-      }, 1000)
-    }catch (e) {
-      console.error("errore chiamata",e);
-      setSpinnerWidth("width-100")
-      setVisibleSpinner("hide");
-
-    }
 
   }
 
@@ -134,7 +101,7 @@ function OpenOrders() {
 
   function _renderlistOrder(objects) {
 
-    if (Object.getOwnPropertyNames(objects).length > 0){
+    if (Object.getOwnPropertyNames(objects).length > 0) {
       return Object.entries(objects).map(([key, value], i) => {
         let pair1 = value.descr.pair.substring(0, 3);
         let pair2 = value.descr.pair.substring(3, 6);
@@ -152,7 +119,12 @@ function OpenOrders() {
             <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.descr.price).toFixed(2) : value.descr.price} </td>
             <td>{pair1} {isFiat(pair1) ? getFiatChar(pair1) + parseFloat(value.vol).toFixed(2) : value.vol}</td>
             <td>{pair2} {isFiat(pair2) ? getFiatChar(pair2) + parseFloat(value.cost).toFixed(2) : value.cost}</td>
-            <td ><button className="btn btn-danger thin tt btn-cancel" onClick={()=>{canceldOrder(key)}}>X</button></td>
+            <td>
+              <button className="btn btn-danger thin tt btn-cancel" onClick={() => {
+                canceldOrder(key)
+              }}>X
+              </button>
+            </td>
 
             {/*<td > <span className={ value.posstatus=="closed" ? "label label-success": "label label-important" }>{value.posstatus} </span></td>*/}
           </tr>
@@ -160,14 +132,13 @@ function OpenOrders() {
 
         )
       });
-    }else{
+    } else {
       return (
         <tr>
-            No results
+          No results
         </tr>
       );
     }
-
 
 
   }
