@@ -37,11 +37,14 @@ function AddOrder() {
   const [orderViewArray, setorderViewArray] = useState(["show", "hide", "hide"]);
   const [btnOrderType, setBtnOrderType] = useState(["btn btn-success", "btn"]);
   const [btnType, setBtnType] = useState(["btn btn-type btn-small", "btn btn-type btn-small active"]);
+  const [btnLeverage, setBtnLeverage] = useState();
+  const [status, setStatus] = useState (true);
+
   const [paramsOrder, setParamsOrder] = useState({
     pair: "XBTUSD",
     type: "buy",
     ordertype: "limit",
-    //   leverage: "1:1",
+    leverage: "none",
     price: "0",
     volume: volumePair
   })
@@ -77,7 +80,6 @@ function AddOrder() {
 
     const groupByBrand = groupBy('base');
     setListAssetPairs(groupByBrand(arr));
-    // setListAssetPairs(data.result);
   }
 
 
@@ -104,22 +106,6 @@ function AddOrder() {
       alert(ris.result.descr.order)
     });
 
-     // const rawData = await fetch('http://127.0.0.1:5555/kraken/addOrder', {
-     //   method: 'POST',
-     //   mode: 'cors', // no-cors, *cors, same-origin
-     //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-     //   credentials: 'same-origin', // include, *same-origin, omit
-     //   headers: {
-     //     'Content-Type': 'application/json'
-     //   },
-     //   body: JSON.stringify(paramsOrder)
-     // }).catch((e) => {
-     //   console.error(e)
-     //   alert(e)
-     // });
-
-     // const data = await rawData.json();
-     // console.log(data)
   }
 
 
@@ -171,7 +157,7 @@ function AddOrder() {
       tooltip_volume_pair1.classList.add('hide');
     }
     setVolumePair(value);
-    setTotalAmount(value * price);
+    setTotalAmount(status ?   value * price : value /  price );
     setRequestParams("volume", value);
 
   }
@@ -188,7 +174,7 @@ function AddOrder() {
       tooltip_volume_pair2.classList.add('hide');
     }
     setPrice(value);
-    setTotalAmount(value * volumePair);
+    setTotalAmount(status ?   value * volumePair :   volumePair /  value );
     setRequestParams("price", value);
   }
 
@@ -197,6 +183,15 @@ function AddOrder() {
     setRequestParams("volume", 0);
   }
 
+  function _handleLeverage(id,level) {
+   let btns=  document.querySelectorAll(".trade-margin-selector");
+   btns.forEach((btn)=>{
+     btn.classList.remove("active")
+   })
+    document.querySelector("#"+id).classList.add("active");
+    setBtnLeverage(level);
+    setRequestParams("leverage",level);
+  }
 
   function _changeSelectedPair (wsname, base, quote) {
     let pair = (wsname.split("/"));
@@ -256,6 +251,8 @@ function AddOrder() {
         Total Balance {selectedPair[0]} {totalPair}
         </span>
         {_renderSelectPair()}
+
+
       </div>
       <div className="tab-pane active" id="new-order">
         <div id="order-form-nav">
@@ -329,6 +326,9 @@ function AddOrder() {
                         </li>
                         <li onClick={() => {
                           setSelectedPair([selectedPair[1], selectedPair[0],selectedPair[3],selectedPair[2]]);
+                          setTotalAmount(!status ?   price * volumePair : volumePair / price );
+                          setStatus(!status);
+                          // setRequestParams("price", value);
                           fetchDataFromApi("balance").then((ris)=>{
                             _getBalance(ris,selectedPair[3]);
                           });
@@ -353,7 +353,7 @@ function AddOrder() {
                     <input type="text" placeholder="Price" tabIndex="2" className={disableLimitPrice[1]} value={price}
                            onChange={handlePrice}
                            name="price" autoComplete="off" disabled={disableLimitPrice[0]}/><span
-                    className="add-on pair hmarg20right">EUR</span>
+                    className="add-on pair hmarg20right">{selectedPair[1]}</span>
                     <div id="tooltip_volume_pair2" className="tooltip hide"> Only digit and "." for decimal</div>
 
                   </div>
@@ -385,11 +385,59 @@ function AddOrder() {
                          onChange={() => {
                          }}
                          className={disableLimitPrice[2]} name="total" disabled={disableLimitPrice[0]}/><span
-                  className="add-on pair">EUR</span>
+                  className="add-on pair">{selectedPair[1]}</span>
                 </div>
-                <p className="control-hint" name="total-hint">Estimated amount of EUR.</p>
+                <p className="control-hint" name="total-hint">Estimated amount of {selectedPair[1]}.</p>
               </div>
             </div>
+
+            <div className="text-left">
+              <div className="control-group">
+                <label className="control-label">Leverage</label>
+                <div className="controls">
+                  <div className="btn-toolbar vmarg0" data-toggle="buttons-radio" name="leverage">
+                    <div className="leverage-tt">
+                      <div className="btn-group">
+                        <button id="lev-1" type="button" className="btn trade-margin-selector active" value="none"
+                                autoComplete="off" onClick={()=>{
+                                  _handleLeverage("lev-1","none");
+                                }}>
+                          None
+                        </button>
+                      </div>
+                      <div className="btn-group">
+                        <button  id="lev-2" type="button" className="btn trade-margin-selector" value="2:1"
+                                autoComplete="off" onClick={()=>{
+                          _handleLeverage("lev-2","2:1");
+                        }}>
+                          2
+                        </button>
+                        <button  id="lev-3" type="button" className="btn trade-margin-selector" value="3:1"
+                                autoComplete="off"onClick={()=>{
+                          _handleLeverage("lev-3","3:1");
+                        }}>
+                          3
+                        </button>
+                        <button  id="lev-4" type="button" className="btn trade-margin-selector" value="4:1"
+                                autoComplete="off"onClick={()=>{
+                          _handleLeverage("lev-4","4:1");
+                        }}>
+                          4
+                        </button>
+                        <button  id="lev-5" type="button" className="btn trade-margin-selector" value="5:1"
+                                autoComplete="off"onClick={()=>{
+                          _handleLeverage("lev-5","5:1");
+                        }}>
+                          5
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="control-hint">&nbsp;</p>
+                </div>
+              </div>
+            </div>
+
 
             <div className="row vpad20 center posrel">
               <span className="">
@@ -1802,7 +1850,7 @@ function AddOrder() {
 
 
       <div>
-        {paramsOrder.type}   {paramsOrder.pair}   {paramsOrder.ordertype}  for {paramsOrder.price} {paramsOrder.volume}
+        {paramsOrder.type}   {paramsOrder.pair}   {paramsOrder.ordertype}  for {paramsOrder.price} {selectedPair[1]} {paramsOrder.volume} {selectedPair[0]} leverage {paramsOrder.leverage} Total: {totalAmount} {selectedPair[0]}
       </div>
 
     </div>
