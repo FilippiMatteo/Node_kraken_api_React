@@ -40,7 +40,7 @@ router.post('/addOrder', function (req, res, next) {
 });
 
 
-router.get('/buy', function (req, res, next) {
+router.get('/testBuy', function (req, res, next) {
 
 
   (async () => {

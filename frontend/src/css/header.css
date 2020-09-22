@@ -29,9 +29,9 @@ body {
     background-color: #2824b6;
 }
 .kraken-header .header-logo {
-    width: 42px;
+    width: 200px;
     height: 100px;
-    background-image: url(../assets/images/kraken-square.svg);
+    background-image: url(../assets/images/kraken-horizontal.svg);
     background-size: contain;
     background-position: 50%;
     background-repeat: no-repeat;

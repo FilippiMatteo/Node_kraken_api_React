@@ -131,21 +131,21 @@ function Navbar() {
         <li className={navbarSelected[5]} onClick={() => {setNavbarSelected(["", "", "", "", "", "header-selected", ""])}}>
           <Link to="/openOrders">Open Orders</Link>
         </li>
-        <li className={navbarSelected[6]} onClick={() => {setNavbarSelected(["", "", "", "", "", "", "header-selected"])}}>
-          <Link to="/openTrades" >Open Trades </Link>
-        </li>
+        {/*<li className={navbarSelected[6]} onClick={() => {setNavbarSelected(["", "", "", "", "", "", "header-selected"])}}>*/}
+        {/*  <Link to="/openTrades" >Open Trades </Link>*/}
+        {/*</li>*/}
 
 
       </ul>
-      <ul className="secondary">
-        <li>
-          <Link to="/login" className="kraken-cta inverted">Accedi</Link>
-        </li>
-        <li>
-          <Link to="/signup" className="kraken-cta">Crea un Account</Link>
-        </li>
+      {/*<ul className="secondary">*/}
+      {/*  <li>*/}
+      {/*    <Link to="/login" className="kraken-cta inverted">Accedi</Link>*/}
+      {/*  </li>*/}
+      {/*  <li>*/}
+      {/*    <Link to="/signup" className="kraken-cta">Crea un Account</Link>*/}
+      {/*  </li>*/}
 
-      </ul>
+      {/*</ul>*/}
     </nav>
   );
 }
