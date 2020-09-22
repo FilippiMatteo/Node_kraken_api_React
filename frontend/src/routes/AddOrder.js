@@ -100,22 +100,26 @@ function AddOrder() {
   const addOrder = async () => {
     console.log(paramsOrder);
 
-    /* const rawData = await fetch('http://127.0.0.1:5555/kraken/addOrder', {
-       method: 'POST',
-       mode: 'cors', // no-cors, *cors, same-origin
-       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-       credentials: 'same-origin', // include, *same-origin, omit
-       headers: {
-         'Content-Type': 'application/json'
-       },
-       body: JSON.stringify(paramsOrder)
-     }).catch((e) => {
-       console.error(e)
-       alert(e)
-     });
+    fetchDataFromApi("addOrder",paramsOrder,'POST').then((ris) => {
+      alert(ris.result.descr.order)
+    });
 
-     const data = await rawData.json();
-     console.log(data)*/
+     // const rawData = await fetch('http://127.0.0.1:5555/kraken/addOrder', {
+     //   method: 'POST',
+     //   mode: 'cors', // no-cors, *cors, same-origin
+     //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+     //   credentials: 'same-origin', // include, *same-origin, omit
+     //   headers: {
+     //     'Content-Type': 'application/json'
+     //   },
+     //   body: JSON.stringify(paramsOrder)
+     // }).catch((e) => {
+     //   console.error(e)
+     //   alert(e)
+     // });
+
+     // const data = await rawData.json();
+     // console.log(data)
   }
 
 
@@ -219,13 +223,13 @@ function AddOrder() {
             {
               Object.entries(listAssetPairs || {}).map(([key, arr], i) => {
                 return (
-                  <li className="dropdown-submenu" id={key}>
-                    <a href="!#">{key}</a>
-                    <ul className="dropdown-menu pairlist" >
+                  <li className="dropdown-submenu" key={key}>
+                    <a >{key}</a>
+                    <ul className="dropdown-menu pairlist"  >
                     {
                       Object.entries(arr).map(([keyArr, value]) => {
                         return (
-                            <li id={keyArr} ><a className="currpairs" onClick={()=>{_changeSelectedPair(value.wsname, value.base, value.quote)}}>{value.wsname}</a></li>
+                            <li key={value.wsname} ><a key={keyArr} className="currpairs" onClick={()=>{_changeSelectedPair(value.wsname, value.base, value.quote)}}>{value.wsname}</a></li>
                         )
                       })
                     }
@@ -247,8 +251,8 @@ function AddOrder() {
       <h1>Add Order</h1>
       <Spinner visibleSpinner={visibleSpinner} spinnerWidth={spinnerWidth}></Spinner>
 
-      <div class="margin-top-10">
-        <span class="margin-right-20">
+      <div className="margin-top-10">
+        <span className="margin-right-20">
         Total Balance {selectedPair[0]} {totalPair}
         </span>
         {_renderSelectPair()}
@@ -259,17 +263,17 @@ function AddOrder() {
             <li className="margin-left-20" onClick={() => {
               _showOrder("order-simple");
             }}>
-              <a id="order-simple" href="!#" className={navbarOrder[0]}>Simple </a>
+              <a id="order-simple"  className={navbarOrder[0]}>Simple </a>
             </li>
             <li className="margin-left-20" onClick={() => {
               _showOrder("order-int");
             }}>
-              <a id="order-int" href="!#" className={navbarOrder[1]}>Intermediate </a>
+              <a id="order-int"  className={navbarOrder[1]}>Intermediate </a>
             </li>
             <li className="margin-left-20" onClick={() => {
               _showOrder("order-adv");
             }}>
-              <a id="order-adv" href="!#" className={navbarOrder[2]}>Advanced </a>
+              <a id="order-adv"  className={navbarOrder[2]}>Advanced </a>
             </li>
           </ul>
         </div>
@@ -1796,6 +1800,10 @@ function AddOrder() {
         </form>
       </div>
 
+
+      <div>
+        {paramsOrder.type}   {paramsOrder.pair}   {paramsOrder.ordertype}  for {paramsOrder.price} {paramsOrder.volume}
+      </div>
 
     </div>
 

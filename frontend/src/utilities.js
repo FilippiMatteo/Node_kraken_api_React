@@ -37,9 +37,23 @@ export const getFiatChar = function (pair) {
   return ris;
 }
 
-export const fetchDataFromApi = async function (param) {
+export const fetchDataFromApi = async function (queryString,param, type) {
 
-    const rawData = await fetch('http://127.0.0.1:5555/kraken/'+param);
+
+  const rawData = await fetch('http://127.0.0.1:5555/kraken/'+queryString, {
+    method: type || "GET",
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(param)
+  }).catch((e) => {
+    console.error(e)
+    alert(e)
+  });
+
 
     return  await rawData.json();
 
