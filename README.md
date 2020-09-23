@@ -12,10 +12,12 @@ Installation Steps:
 Click on Porfile -> Setting ->Api -> Generate new key
 
 
+
 Check this options for let the project working
 Funds
  Query Funds
- 
+
+
 Orders & Trades
  Query Open Orders & Trades
  Query Closed Orders & Trades
@@ -27,14 +29,20 @@ Ledger
 Other 
 
 
+
 2) Run on terminal in "frontend" folder and main folder(backend)
   
   npm i && cd frontend && npm i && cd ..
   
+  
+  
 3) Launch backend and frontend servers
-  nodemon app 
-  cd frontend
-  npm run start
+  a)nodemon app
+  
+  b)cd frontend
+
+  c)npm run start
+  
 
 4) Insert on homepage the secret keys obtained on kraken website (step 1)
 
