@@ -2,8 +2,13 @@
 
 I do not take any responsibility in case of capital losses for trading or for project malfunctions
 
+
 Frontend reactjs with hooks v16.13.1 required
+
+
 Backend nodejs > v10 required
+
+
 
 Installation Steps:
 
@@ -19,13 +24,26 @@ Funds
 
 
 Orders & Trades
+
+
  Query Open Orders & Trades
+ 
+ 
  Query Closed Orders & Trades
+ 
+ 
  Modify Orders
+ 
+ 
  Cancel/Close Orders
  
+ 
 Ledger
+
+
  Query Ledger Entries
+ 
+ 
 Other 
 
 
@@ -37,6 +55,7 @@ Other
   
   
 3) Launch backend and frontend servers
+
   a)nodemon app
   
   b)cd frontend
