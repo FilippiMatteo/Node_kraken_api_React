@@ -27,19 +27,19 @@ Ledger
 Other 
 
 
-2)Run on terminal in "frontend" folder and main folder(backend)
+2) Run on terminal in "frontend" folder and main folder(backend)
   
   npm i 
   cd frontend
   npm i
   
-3)Launch backend and frontend servers
+3) Launch backend and frontend servers
   nodemon app
   cd frontend
   npm run start
 
-4)Insert on homepage the secret keys obtained on kraken website (step 1)
+4) Insert on homepage the secret keys obtained on kraken website (step 1)
 
-5)Enjoy :D
+5) Enjoy :D
 
 
