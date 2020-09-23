@@ -29,12 +29,10 @@ Other
 
 2) Run on terminal in "frontend" folder and main folder(backend)
   
-  npm i 
-  cd frontend
-  npm i
+  npm i && cd frontend && npm i && cd ..
   
 3) Launch backend and frontend servers
-  nodemon app
+  nodemon app 
   cd frontend
   npm run start
 
