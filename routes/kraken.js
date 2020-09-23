@@ -4,7 +4,7 @@ var fs = require("fs");
 
 
 const KrakenClient = require('kraken-api');
-const {key,secret} = require ( '../global');
+const {key,secret} = require ( '../Kraken_Keys');
 
 const kraken = new KrakenClient(key, secret);
 
@@ -21,13 +21,13 @@ router.post('/setSecretKey', function (req, res, next) {
         data+="const secret='" + req.body.secret+"';\n\n";
         data+= "module.exports = {key,secret};\n";
 
-        fs.writeFile('global.js', data, function(err) {
+        fs.writeFile('Kraken_Keys.js', data, function(err) {
           if (err) {
             return console.error(err);
             res.status(500).json({ error: err });
           }
 
-          fs.readFile('global.js', function (err, data) {
+          fs.readFile('Kraken_Keys.js', function (err, data) {
             if (err) {
               return console.error(err);
               res.status(500).json({ error: err });

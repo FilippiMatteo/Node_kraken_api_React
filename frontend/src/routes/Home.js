@@ -77,7 +77,7 @@ function Home() {
         <div className="margin-top-10 padding-20">
           <p>Before start to use this project you need to start the backend  with nodejs  </p>
           <p>After this you need to set api secret (only for trades, withdraw and deposit is not implented yet) on <a href="https://www.kraken.com" target="_blank" rel="noopener noreferrer"> Kraken official site </a></p>
-          <p>When you obtains your secret code, open "global.js" and change "key" and "secret" constant with your codes</p>
+          <p>When you obtains your secret code, open "Kraken_Keys.js" and change "key" and "secret" constant with your codes</p>
         </div>
 
 
@@ -85,7 +85,7 @@ function Home() {
 
         <div className="margin-top-10 padding-20">
           <div  >
-            <p>You can change the codes from here, Don't worry, will be only save on local configuration file "global.js"</p>
+            <p>You can change the codes from here, Don't worry, will be only save on local configuration file "Kraken_Keys.js"</p>
             <form>
               <div className="form-group">
                 <label htmlFor="api_key">API Key</label>
@@ -97,7 +97,7 @@ function Home() {
               </div>
               <div className="form-check">
                 <input type="checkbox" className="form-check-input" id="exampleCheck1" value={checkBox} onChange={_handleCheckBox} />
-                <label className="form-check-label" htmlFor="exampleCheck1">Are you sure to change global.js file?</label>
+                <label className="form-check-label" htmlFor="exampleCheck1">Are you sure to change Kraken_Keys.js file?</label>
               </div>
               <button type="button" className="btn btn-primary margin-top-10" onClick={()=>{_SaveKeys()}} >Save</button>
             </form>
