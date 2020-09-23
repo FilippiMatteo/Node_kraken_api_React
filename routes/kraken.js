@@ -1,12 +1,60 @@
 var express = require('express');
 var router = express.Router();
+var fs = require("fs");
+
 
 const KrakenClient = require('kraken-api');
-const {key,secret} = require ( '../gloabal');
+const {key,secret} = require ( '../global');
 
 const kraken = new KrakenClient(key, secret);
 
+
+router.post('/getSecretKey', function (req, res, next) {
+   res.send ({key,secret});
+
+});
+router.post('/setSecretKey', function (req, res, next) {
+  try{
+    (async () => {
+      if(req.body){
+        let data= "const key='" +req.body.key+"';\n";
+        data+="const secret='" + req.body.secret+"';\n\n";
+        data+= "module.exports = {key,secret};\n";
+
+        fs.writeFile('global.js', data, function(err) {
+          if (err) {
+            return console.error(err);
+            res.status(500).json({ error: err });
+          }
+
+          fs.readFile('global.js', function (err, data) {
+            if (err) {
+              return console.error(err);
+              res.status(500).json({ error: err });
+            }
+            console.log("Asynchronous read: " + data.toString());
+            res.json ("Edit file successfull, restart the server if don't see the changes");
+          });
+        });
+
+
+      }else{
+        res.status(400).json({ error: "body params undefined" });
+      }
+
+    })();
+  }catch (err) {
+    res.status(500).json({ error: err });
+  }
+
+
+
+});
+
+
 // pairs XXBTZUSD - ETHXBT
+
+
 
 
 /* GET users listing. */
@@ -83,8 +131,8 @@ router.get('/openPositions', function (req, res, next) {
     // Display user's balance
     var response = (await kraken.api('OpenPositions'));
     console.dir(response);
-    res.json(response)
-
+    // res.json(response)
+    res.status(200).json(response);
   })();
 
 });
@@ -95,8 +143,8 @@ router.get('/openOrders', function (req, res, next) {
     // Display user's balance
     var response = (await kraken.api('OpenOrders'));
     console.dir(response);
-    res.send(response)
-
+    // res.send(response)
+    res.status(200).json(response);
   })();
 
 });
@@ -107,8 +155,8 @@ router.get('/tradesHistory', function (req, res, next) {
     // Display user's balance
     var response = (await kraken.api('TradesHistory'));
     console.dir(response);
-    res.send(response)
-
+    // res.send(response)
+    res.status(200).json(response);
   })();
 
 });
@@ -116,16 +164,25 @@ router.get('/tradesHistory', function (req, res, next) {
 
 
 router.get('/balance', function (req, res, next) {
+  try{
 
-  (async () => {
       // Display user's balance
-      var response = (await kraken.api('Balance'));
-      console.dir(response);
-      res.json(response)
+
+          kraken.api('Balance').then((ris)=>{
+           var response = ris;
+            console.dir(response);
+            // res.json(response)
+            res.status(200).json(response);
+        }).catch(()=>{
+          console.log("dentro il catch");
+          res.status("500").json("Error");
+        });
 
 
-  })();
 
+  }catch (e) {
+    res.status("500").json("Error");
+  }
 });
 
 // public methods
