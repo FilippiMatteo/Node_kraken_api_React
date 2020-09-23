@@ -184,9 +184,9 @@ function AddOrder() {
   }
 
   function _handleLeverage(id,level) {
-   let btns=  document.querySelectorAll(".trade-margin-selector");
-   btns.forEach((btn)=>{
-     btn.classList.remove("active")
+   let listNodes = document.querySelectorAll(".trade-margin-selector");
+   listNodes.forEach((node)=>{
+     node.classList.remove("active")
    })
     document.querySelector("#"+id).classList.add("active");
     setBtnLeverage(level);
