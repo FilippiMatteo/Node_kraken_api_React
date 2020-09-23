@@ -55,13 +55,13 @@ function Home() {
       fetchDataFromApi("setSecretKey", {key: tempKeys[0] ,secret: tempKeys[1]},"POST").then((ris) => {
         setSpinnerWidth("width-50");
         setSpinnerWidth("width-100")
-        alert(ris);
-        console.log(ris);
 
         setTimeout(() => {
+          alert(ris);
+          console.log(ris);
           setVisibleSpinner("hide");
           setSpinnerWidth("width-15");
-        }, 1000)
+        }, 500)
       })
 
     }else{
@@ -76,8 +76,8 @@ function Home() {
       <div className="padding-20">
         <div className="margin-top-10 padding-20">
           <p>Before start to use this project you need to start the backend  with nodejs  </p>
-          <p>After this you need to set api secret on <a href="https://www.kraken.com" target="_blank" rel="noopener noreferrer"> Kraken official site </a></p>
-          <p>When you obtains your secret code, open global.js and change "key" and "secret" constant with your codes</p>
+          <p>After this you need to set api secret (only for trades, withdraw and deposit is not implented yet) on <a href="https://www.kraken.com" target="_blank" rel="noopener noreferrer"> Kraken official site </a></p>
+          <p>When you obtains your secret code, open "global.js" and change "key" and "secret" constant with your codes</p>
         </div>
 
 
@@ -85,7 +85,7 @@ function Home() {
 
         <div className="margin-top-10 padding-20">
           <div  >
-            <p>You can change the codes from here, Don't worry will, be only save on local configuration file  global.js</p>
+            <p>You can change the codes from here, Don't worry, will be only save on local configuration file "global.js"</p>
             <form>
               <div className="form-group">
                 <label htmlFor="api_key">API Key</label>

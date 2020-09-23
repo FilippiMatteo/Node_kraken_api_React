@@ -2,34 +2,63 @@ import React, {useState, useEffect} from 'react';
 import '../App.css';
 import Spinner from "../componets/Spinner";
 import {Link} from "react-router-dom";
-import {isFiat} from "../utilities";
+import {fetchDataFromApi, isFiat} from "../utilities";
 
 
 function Balance() {
-  useEffect(()=>{
-    fetchData();
-  },[])
+  // useEffect(()=>{
+  //   fetchData();
+  // },[])
 
 const [pairs, setPairs] = useState([])
 const [visibleSpinner, setVisibleSpinner] = useState([])
 const [spinnerWidth, setSpinnerWidth] = useState([])
 
-  const fetchData = async () => {
+
+  useEffect(() => {
+    getBalance();
+  }, [])
+
+  const getBalance = async () =>{
     setVisibleSpinner("show");
     setSpinnerWidth("width-15");
+    fetchDataFromApi("balance").then((ris) => {
+      setSpinnerWidth("width-50");
+      if (ris!=="Error"){
+        setPairs(ris);
+      }else{
+        alert("Error bad api secret codes");
+      }
+      setSpinnerWidth("width-100");
 
-    const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
-
-    setSpinnerWidth("width-50")
-
-    const data = await rawData.json();
-    setPairs(data)
-
-    setSpinnerWidth("width-100")
-    setTimeout(()=>{
+      setTimeout(() => {
+        setVisibleSpinner("hide");
+        setSpinnerWidth("width-15");
+      }, 1000)
+    }).catch((e) => {
+      alert(e);
       setVisibleSpinner("hide");
-    },1000)
+      setSpinnerWidth("width-15");
+    });
   }
+
+  //
+  // const fetchData = async () => {
+  //   setVisibleSpinner("show");
+  //   setSpinnerWidth("width-15");
+  //
+  //   const rawData = await fetch('http://127.0.0.1:5555/kraken/balance');
+  //
+  //   setSpinnerWidth("width-50")
+  //
+  //   const data = await rawData.json();
+  //   setPairs(data)
+  //
+  //   setSpinnerWidth("width-100")
+  //   setTimeout(()=>{
+  //     setVisibleSpinner("hide");
+  //   },1000)
+  // }
 
 
   function _renderObject(objects){
