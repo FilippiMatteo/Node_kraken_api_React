@@ -1,7 +1,7 @@
 {
   "name": "node-kraken",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "start:_old": "node ./bin/www",
     "start": "node app.js"
