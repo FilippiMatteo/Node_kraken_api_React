@@ -48,6 +48,7 @@ Other
 
 
 
+
 2) Run on terminal in "frontend" folder and main folder(backend)
   
   npm i && cd frontend && npm i && cd ..
