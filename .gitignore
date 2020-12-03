@@ -6,3 +6,6 @@
 
 /bin/www
 /frontend/build/
+/.vs/Node_kraken_api_React/v16
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json

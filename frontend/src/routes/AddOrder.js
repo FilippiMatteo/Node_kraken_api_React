@@ -224,7 +224,7 @@ function AddOrder() {
                     {
                       Object.entries(arr).map(([keyArr, value]) => {
                         return (
-                            <li key={value.wsname} ><a key={keyArr} className="currpairs" onClick={()=>{_changeSelectedPair(value.wsname, value.base, value.quote)}}>{value.wsname}</a></li>
+                            <li key={value.wsname || value.base + '/' + value.quote} ><a key={keyArr} className="currpairs" onClick={()=>{_changeSelectedPair(value.wsname, value.base, value.quote)}}>{value.wsname}</a></li>
                         )
                       })
                     }
